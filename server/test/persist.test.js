@@ -8,6 +8,7 @@ import { persistLiveCatalog } from "../src/db/persist.js";
 import { seedDatabase } from "../src/db/seed.js";
 import { listServices } from "../src/models/Service.js";
 import { getAllSettings, updateSettings } from "../src/models/Settings.js";
+import { DEFAULT_SERVICES } from "../src/config/defaultServices.js";
 
 function tmpDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "gs-persist-"));
@@ -38,12 +39,17 @@ describe("catalog comes from source code", () => {
     if (dir) fs.rmSync(dir, { recursive: true, force: true });
   });
 
-  it("starts with whatever DEFAULT_SERVICES contains (empty until you add rows)", () => {
+  it("starts with the hardcoded DEFAULT_SERVICES catalog", () => {
     dir = tmpDir();
     process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
     initDatabase(path.join(dir, "live.db"));
     seedDatabase();
-    assert.equal(listServices().length, 0);
+    assert.equal(listServices().length, DEFAULT_SERVICES.length);
+    assert.equal(listServices()[0].id, "netflix-prime-combo");
+    assert.equal(
+      listServices().find((s) => s.id === "whatsapp-number")?.prices.month,
+      1,
+    );
   });
 
   it("does not restore leftover JSON catalog dumps", () => {
@@ -68,7 +74,9 @@ describe("catalog comes from source code", () => {
 
     initDatabase(path.join(dir, "live.db"));
     seedDatabase();
-    assert.equal(listServices().length, 0);
+    const ids = listServices().map((s) => s.id);
+    assert.equal(ids.includes("leftover-dump"), false);
+    assert.equal(ids.length, DEFAULT_SERVICES.length);
   });
 
   it("keeps hardcoded services after sqlite is deleted", () => {
@@ -117,7 +125,7 @@ describe("catalog comes from source code", () => {
     seedDatabase();
 
     const settings = getAllSettings();
-    assert.equal(listServices().length, 0);
+    assert.equal(listServices().length, DEFAULT_SERVICES.length);
     assert.equal(settings.complaintEmail, "ops-forever@example.com");
     assert.deepEqual(settings.whatsappNumbers, ["96550001111", "96550002222"]);
     assert.equal(settings.aboutEn, "Custom about forever");

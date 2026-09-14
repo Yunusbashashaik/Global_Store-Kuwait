@@ -116,4 +116,4 @@ Pushes to **`main`** run [`.github/workflows/deploy-pages.yml`](.github/workflow
 
 If the workflow has not run yet, go to **Actions** → **Deploy to GitHub Pages** → **Run workflow**.
 
-The homepage uses built-in catalog data if the API is unavailable. **Admin**, **live price/settings edits**, and **complaint email via SMTP** need the Node server (`npm start` on a host such as Render or GoDaddy Node). Point that host at a persistent disk so `server/data/globalstore.db` survives restarts.
+The homepage uses the hardcoded catalog in `shared/defaultServices.js` if the API is unavailable. **Admin** (settings), and **complaint email via SMTP** need the Node server (`npm start` on a host such as Render or GoDaddy Node).
