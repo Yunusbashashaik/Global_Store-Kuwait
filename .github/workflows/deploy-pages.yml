@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# https://yunusbashashaik.github.io/Global-Stores/
+# https://yunusbashashaik.github.io/Global_Store-Kuwait/
 # Pages setting: Deploy from a branch → gh-pages → / (root)
 
 on:
@@ -31,7 +31,7 @@ jobs:
       - name: Build client
         run: npm run build -w client
         env:
-          VITE_BASE_PATH: /Global-Stores/
+          VITE_BASE_PATH: /Global_Store-Kuwait/
 
       - name: SPA fallback + Jekyll bypass
         run: |

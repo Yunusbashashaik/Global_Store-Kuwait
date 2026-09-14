@@ -4,8 +4,8 @@ published: false
 
 # Global-Stores
 
-> **Open the website (iPad / phone):** [https://yunusbashashaik.github.io/Global-Stores/](https://yunusbashashaik.github.io/Global-Stores/)  
-> Do **not** use `yunusbashashaik.github.io` alone — that is not your store URL.
+> **Open the website:** [https://yunusbashashaik.github.io/Global_Store-Kuwait/](https://yunusbashashaik.github.io/Global_Store-Kuwait/)  
+> Do **not** use `yunusbashashaik.github.io` alone — that is a different site and shows GitHub’s 404.
 
 GlobalStore.com — bilingual digital subscription marketplace for Kuwait (KWD).
 
@@ -107,12 +107,12 @@ Pushes to **`main`** run [`.github/workflows/deploy-pages.yml`](.github/workflow
 
 ### One-time setup (iPhone, iPad, or computer)
 
-1. Open **https://github.com/Yunusbashashaik/Global-Stores/settings/pages**
+1. Open **https://github.com/Yunusbashashaik/Global_Store-Kuwait/settings/pages**
 2. Under **Build and deployment** → **Source**, choose **Deploy from a branch**
 3. **Branch:** `gh-pages` · **Folder:** `/ (root)` · **Save**
-4. Wait 1–2 minutes, then open on your iPad:
+4. Wait 1–2 minutes, then open:
 
-   **https://yunusbashashaik.github.io/Global-Stores/**
+   **https://yunusbashashaik.github.io/Global_Store-Kuwait/**
 
 If the workflow has not run yet, go to **Actions** → **Deploy to GitHub Pages** → **Run workflow**.
 

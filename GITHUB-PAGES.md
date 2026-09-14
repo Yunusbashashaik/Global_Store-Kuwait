@@ -2,33 +2,29 @@
 
 ## Your store URL
 
-### **https://yunusbashashaik.github.io/Global-Stores/**
+### **https://yunusbashashaik.github.io/Global_Store-Kuwait/**
+
+Do **not** open `https://yunusbashashaik.github.io/` — that is your GitHub user site, not this repo, and GitHub shows a 404.
 
 ---
 
 ## How deploy works
 
-Pushing to `main` runs **Deploy to GitHub Pages**, which builds the client and publishes a clean orphan commit to the `gh-pages` branch (root only). GitHub then serves that branch.
+Pushing to **`main`** runs **Deploy to GitHub Pages**, which builds the client and publishes to the **`gh-pages`** branch.
 
-Do **not** keep a “Deploy static content to Pages” workflow that uploads the whole repo — it fights the real deploy and can leave Pages stuck in `building`.
+GitHub Pages must serve **`gh-pages`**, not **`main`**. `main` is the Node source (no website `index.html` at the root), so Pages on `main` always 404s.
 
-## If Actions shows “pages build and deployment” stuck / in progress
+## One-time Pages setting
 
-That workflow is GitHub’s **legacy branch deploy**. When it hangs or the site status is `errored` / stuck `building`, do this once:
-
-1. Open **https://github.com/Yunusbashashaik/Global-Stores/settings/pages**
-2. Under **Build and deployment** → **Source**, choose **GitHub Actions**
-3. Save, then open **Actions** → **Deploy Pages (GitHub Actions)** → **Run workflow**
-4. Wait 1–2 minutes, then hard-refresh the store URL above
-
-### Fallback (keep branch deploy)
-
-1. Same Pages settings page
-2. **Source:** Deploy from a branch
+1. Open **https://github.com/Yunusbashashaik/Global_Store-Kuwait/settings/pages**
+2. **Build and deployment** → **Source:** Deploy from a branch
 3. **Branch:** `gh-pages` · **Folder:** `/ (root)`
-4. Click **Save** again (even if already selected) — this clears an `errored` / stuck `building` state
-5. Cancel any hung **Deploy static content to Pages** / **Deploy Pages (GitHub Actions)** runs in the Actions tab
-6. Wait for the new `pages-build-deployment` run to finish (often 2–8 minutes), or re-run **Deploy to GitHub Pages**
+4. **Save**
+5. Wait 1–2 minutes, then hard-refresh:
+
+   **https://yunusbashashaik.github.io/Global_Store-Kuwait/**
+
+If Actions has not run yet: **Actions** → **Deploy to GitHub Pages** → **Run workflow**.
 
 ---
 
@@ -36,5 +32,6 @@ That workflow is GitHub’s **legacy branch deploy**. When it hangs or the site 
 
 | URL | Result |
 |-----|--------|
-| `yunusbashashaik.github.io` | Not your store |
-| `yunusbashashaik.github.io/Global-Stores/` | **Correct homepage** |
+| `yunusbashashaik.github.io` | Not this project — GitHub 404 |
+| `yunusbashashaik.github.io/Global-Stores/` | Old name — not this repo |
+| `yunusbashashaik.github.io/Global_Store-Kuwait/` | **Correct homepage** |
