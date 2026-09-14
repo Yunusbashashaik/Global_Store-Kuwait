@@ -1,59 +1,12 @@
 import { getDb, getDbEngine } from "./connection.js";
 import { readDurableCatalog, writeDurableCatalog } from "./durableStore.js";
-import { DEFAULT_SERVICES } from "../config/defaultServices.js";
 import { DEFAULT_SETTINGS } from "../config/defaults.js";
-import {
-  insertService,
-  listServices,
-  updateService,
-} from "../models/Service.js";
+import { listServices, updateService } from "../models/Service.js";
 import { getAllSettings } from "../models/Settings.js";
 import {
   persistServiceImageFiles,
   restoreServiceImageFiles,
 } from "../services/serviceImages.js";
-import { filterFactoryDumpServices } from "./factoryCatalog.js";
-
-function rowToPatch(item) {
-  if (item.prices && item.nameEn) {
-    return {
-      id: item.id,
-      icon: item.icon,
-      accent: item.accent,
-      typeEn: item.typeEn,
-      typeAr: item.typeAr,
-      nameEn: item.nameEn,
-      nameAr: item.nameAr,
-      descriptionEn: item.descriptionEn,
-      descriptionAr: item.descriptionAr,
-      prices: item.prices,
-      imageUrl: item.imageUrl,
-      imageData: item.imageData || null,
-      outOfStock: item.outOfStock,
-      sortOrder: item.sortOrder,
-    };
-  }
-  const outOfStock = Boolean(item.out_of_stock);
-  return {
-    id: item.id,
-    icon: item.icon,
-    accent: item.accent,
-    typeEn: item.type_en,
-    typeAr: item.type_ar,
-    nameEn: item.name_en,
-    nameAr: item.name_ar,
-    descriptionEn: item.description_en,
-    descriptionAr: item.description_ar,
-    prices: {
-      month: outOfStock ? 0 : Number(item.price_month),
-      year: outOfStock ? 0 : Number(item.price_year),
-    },
-    imageUrl: item.image_url || null,
-    imageData: item.image_data || item.imageData || null,
-    outOfStock,
-    sortOrder: item.sort_order,
-  };
-}
 
 function rawSettingsFromDb() {
   try {
@@ -99,37 +52,8 @@ export function persistLiveCatalog() {
   }
 }
 
-function stamp(value) {
-  const t = Date.parse(String(value || "").replace(" ", "T"));
-  return Number.isFinite(t) ? t : 0;
-}
-
 function stable(value) {
   return JSON.stringify(value ?? null);
-}
-
-function serviceFingerprint(service) {
-  return stable({
-    nameEn: service.nameEn,
-    nameAr: service.nameAr,
-    descriptionEn: service.descriptionEn,
-    descriptionAr: service.descriptionAr,
-    typeEn: service.typeEn,
-    typeAr: service.typeAr,
-    imageUrl: service.imageUrl || null,
-    hasImageData: Boolean(service.imageData || service.image_data),
-    prices: {
-      month: Number(service.prices?.month),
-      year: Number(service.prices?.year),
-    },
-    outOfStock: Boolean(service.outOfStock),
-  });
-}
-
-function isDefaultService(service) {
-  const fallback = DEFAULT_SERVICES.find((item) => item.id === service.id);
-  if (!fallback) return false;
-  return serviceFingerprint(service) === serviceFingerprint(fallback);
 }
 
 function settingsToRaw(settings) {
@@ -217,45 +141,6 @@ export function restoreCatalogFromBackup() {
   }
 
   let changed = false;
-
-  const incoming = filterFactoryDumpServices(backup.services);
-  if (incoming.length) {
-    if (live.length === 0) {
-      incoming.forEach((item, index) => {
-        const patch = rowToPatch(item);
-        insertService({
-          ...patch,
-          sortOrder: patch.sortOrder ?? index,
-        });
-      });
-      changed = true;
-    } else {
-      const byId = new Map(live.map((service) => [service.id, service]));
-      incoming.forEach((item) => {
-        const patch = rowToPatch(item);
-        if (!patch.id) return;
-        const current = byId.get(patch.id);
-        if (!current) {
-          insertService(patch);
-          changed = true;
-          return;
-        }
-        const contentDiffers = serviceFingerprint(current) !== serviceFingerprint(patch);
-        if (
-          shouldPreferBackup({
-            liveDefault: isDefaultService(current),
-            backupDefault: isDefaultService(patch),
-            liveStamp: stamp(current.updatedAt),
-            backupStamp: stamp(item.updated_at || item.updatedAt),
-            contentDiffers,
-          })
-        ) {
-          updateService(patch.id, patch);
-          changed = true;
-        }
-      });
-    }
-  }
 
   if (backup.settings) {
     const liveSettings = getAllSettings();

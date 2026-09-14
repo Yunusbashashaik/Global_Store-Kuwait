@@ -21,78 +21,9 @@ Brand Introduction: Brief overview establishing marketplace trust under ownershi
 Subscription Catalog Grid: Immediate display of all digital subscription cards with KWD price tags.
 Customer Support & WhatsApp Showcase: Highlights direct order routing to dedicated WhatsApp lines.
 Global Header & Footer: Persistent layout containers across all pages.
-3. Subscription Catalog & Package Content Specifications
-Note on Pricing Architecture: As specified, price values are kept separate from card body descriptions. Prices are rendered exclusively on the dedicated Price Tags / Package Selection Toggles (1 Month vs. 1 Year).
+3. Subscription Catalog
 
-Service 1: Netflix Private Screen 👑
-Price Tag Data: 1 Month = 2 KD | 1 Year = 14 KD
-Card Description Data:
-Plaintext
-✨ Enjoy your own private Netflix profile
-
-👤 Personal Profile
-🔐 Private PIN Protection
-🎭 Custom Profile Picture
-📺 HD Streaming
-⚡ Instant Activation
-🛟 24/7 Support
-Service 2: Netflix & Prime Video Sharing (Bundle) 🍿
-Price Tag Data: 1 Month = 1 KD | 1 Year = 8 KD
-Card Description Data:
-Plaintext
-✨ Premium streaming at the best price
-
-👥 Shared Screen Access
-📺 HD Quality Streaming
-🚀 Smooth & Stable Service
-⚡ Instant Activation
-🛟 24/7 Customer Support
-Service 3: YouTube Premium 🎬
-Price Tag Data: 1 Month = 1 KD | 1 Year = 8 KD
-Card Description Data:
-Plaintext
-✨ Enjoy YouTube without limits
-
-🚫 Ad-Free Videos
-🎧 Background Play
-📥 Offline Downloads
-🎵 YouTube Music Premium
-⚡ Instant Activation
-🛟 24/7 Customer Support
-Service 4: IPTV Premium 📡
-Price Tag Data: 1 Month = 1 KD | 1 Year = 8 KD
-Card Description Data:
-Plaintext
-✨ Unlimited entertainment, anytime, anywhere
-
-🔹 Live TV Channels
-🎬 Movies & TV Series
-⚽ Sports & Premium Channels
-📺 HD & FHD Streaming
-⚡ Instant Activation
-🛟 24/7 Customer Support
-Service 5: Canva Pro 🎨
-Price Tag Data: 1 Month = 1 KD | 1 Year = 8 KD
-Card Description Data:
-Plaintext
-✨ Create stunning designs with premium tools
-
-🎯 Full Canva Pro Access
-📂 Millions of Premium Templates
-🖼️ Premium Photos, Videos & Fonts
-🪄 Background Remover & Magic Resize
-🤖 AI Design Tools & Brand Kit
-🚀 Instant Activation
-🛟 24/7 Customer Support
-Service 6: NordVPN 🔐 🌍
-Price Tag Data: 1 Month = 1 KD | 1 Year = 8 KD
-Card Description Data:
-Plaintext
-⚡ Fast & Secure Connection
-🌎 Access Global Content
-🛡️ Protect Your Privacy
-📱 Works on Multiple Devices
-✅ Instant Activation
+The live catalog is **`shared/defaultServices.js`** (English name, Arabic name, descriptions, prices) plus JPEGs in `client/public/service-images/{id}.jpg`. There is no baked-in Netflix/Prime list in this document. Add services in that file and deploy.
 4. Direct WhatsApp Ordering System & Multi-Number Logic
 Checkout routes directly to customer support over WhatsApp using two configured support numbers:
 Configured Support Numbers:

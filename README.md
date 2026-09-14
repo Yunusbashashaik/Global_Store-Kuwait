@@ -80,24 +80,13 @@ If the website and API use different URLs, edit `client/public/runtime-config.js
 window.__GLOBALSTORE_CONFIG__ = { apiUrl: "https://your-node-api-url" };
 ```
 
-Keep `server/data/` on a persistent disk so SQLite and uploads survive restarts.
+### Catalog (hardcoded in Git)
 
-The storefront ships with an **empty catalog**. Add services one by one in Admin after publish. There is no baked-in Netflix/Prime/etc. list, and leftover factory backups are not re-imported.
+Edit **`shared/defaultServices.js`** and put JPEGs in **`client/public/service-images/{id}.jpg`**. Commit and deploy. That catalog ships with the code, so it **does not vanish** on GoDaddy the way Admin-only database rows did.
 
-Admin adds/edits are written to **both** `server/data/globalstore.db` (or the JSON fallback) **and** `server/data/globalstore.json`. That backup includes services you added (prices, names, descriptions, images, stock), complaint email, WhatsApp/contact numbers, About Us, and social links. On every app start the server restores **your** backup — not the old factory catalog.
+The storefront starts with an empty array until you add objects there. JSON dumps under `godaddy-sync/` and `server/data/` are not imported as services.
 
-The public homepage also keeps the last live catalog in the browser (`localStorage` key `globalstores_services_v3`).
-
-### Admin backup folder (`godaddy-sync/`)
-
-Every admin create/edit/delete of a service (and settings saves) writes a copy into **`godaddy-sync/`** for manual backup before you copy a GitHub release onto GoDaddy:
-
-- `godaddy-sync/latest-catalog.json`
-- `godaddy-sync/latest-settings.json`
-- `godaddy-sync/admin-uploads/services/` (uploaded JPEGs)
-- `godaddy-sync/changelog.jsonl`
-
-Those runtime files are gitignored. Copy the folder off-box, then restore images into `server/data/uploads/services/` on the server. See `godaddy-sync/README.md`. Optional env: `GODADDY_SYNC_DIR`.
+Admin can still change complaint email / WhatsApp / About Us. Do not use Admin to add the public catalog if you want it to survive every publish.
 
 ### Complaint email
 

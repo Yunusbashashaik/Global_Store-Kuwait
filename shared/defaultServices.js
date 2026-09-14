@@ -1,36 +1,24 @@
-/** Retired factory catalog IDs — never seed or restore these from leftover backups. */
-export const RETIRED_FACTORY_SERVICE_IDS = [
-  "netflix-private",
-  "netflix-prime",
-  "youtube-premium",
-  "iptv",
-  "canva",
-  "nordvpn",
-  "grok",
-  "google-gemini",
-  "capcut-pro",
-  "mubi",
-  "hulu",
-  "peacock",
-  "sonyliv",
-  "starzplay",
-  "osn-plus",
-  "disney-plus",
-  "shahid",
-  "chatgpt-plus",
-  "crunchyroll",
-  "paramount-plus",
-  "hbo-max",
-  "zee5",
-  "apple-tv-plus",
-  "apple-music",
-  "youtube-music",
-  "spotify-premium",
-  "proton-vpn",
-  "cyberghost-vpn",
-  "surfshark-vpn",
-  "expressvpn",
-];
-
-/** No baked-in catalog. Admin adds services after publish. */
+/**
+ * Hardcoded store catalog. Edit this file, commit, and deploy.
+ * These rows ship with the GitHub code, so they do not vanish on GoDaddy
+ * the way Admin-only database rows did.
+ *
+ * Add one object per service, plus a JPEG at
+ * `client/public/service-images/{id}.jpg`.
+ *
+ * Example:
+ * {
+ *   id: "example-service",
+ *   icon: "✨",
+ *   accent: "#38bdf8",
+ *   typeEn: "Shared / Private",
+ *   typeAr: "مشترك / خاص",
+ *   nameEn: "Example",
+ *   nameAr: "مثال",
+ *   descriptionEn: "English description",
+ *   descriptionAr: "الوصف بالعربية",
+ *   prices: { month: 1, year: 8 },
+ *   imageUrl: "/service-images/example-service.jpg",
+ * }
+ */
 export const DEFAULT_SERVICES = [];

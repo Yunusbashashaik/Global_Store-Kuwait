@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getDb, getServiceUploadsDir } from "../db/connection.js";
-import { getGodaddySyncDir } from "./godaddySync.js";
 
 const REPO_ROOT = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -24,16 +23,8 @@ export function serviceImagePublicUrl(id) {
   return `/api/services/${safeServiceId(id)}/image`;
 }
 
-function clientPublicServiceImagesDir() {
-  return path.join(REPO_ROOT, "client", "public", "service-images");
-}
-
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
-}
-
-function godaddyServiceImagesDir() {
-  return path.join(getGodaddySyncDir(), "admin-uploads", "services");
 }
 
 function clientDistServiceImagesDir() {
@@ -52,8 +43,6 @@ export function mirrorServiceImageFile(filename) {
   if (!safe) return;
   const source = path.join(getServiceUploadsDir(), safe);
   if (!fs.existsSync(source)) return;
-  copyFileIfPresent(source, path.join(godaddyServiceImagesDir(), safe));
-  copyFileIfPresent(source, path.join(clientPublicServiceImagesDir(), safe));
   copyFileIfPresent(source, path.join(clientDistServiceImagesDir(), safe));
 }
 
@@ -75,7 +64,6 @@ function filenameFromImageUrl(imageUrl) {
 function imageSearchDirs() {
   return [
     getServiceUploadsDir(),
-    godaddyServiceImagesDir(),
     path.join(REPO_ROOT, "server", "data", "uploads", "services"),
     path.join(REPO_ROOT, "client", "public", "service-images"),
     path.join(REPO_ROOT, "client", "dist", "service-images"),
@@ -157,7 +145,6 @@ export function removeServiceImage(id) {
 
 export function persistServiceImageFiles(services = []) {
   ensureDir(getServiceUploadsDir());
-  ensureDir(godaddyServiceImagesDir());
   for (const service of services) {
     if (!service?.id) continue;
     const found = findExistingImage(service.id, service.imageUrl);

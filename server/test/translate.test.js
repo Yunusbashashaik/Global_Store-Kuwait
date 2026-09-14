@@ -38,14 +38,14 @@ describe("English to Arabic translation", () => {
       if (String(url).includes("lingva.ml")) {
         return {
           ok: true,
-          json: async () => ({ translation: "نتفليكس شاشة مشتركة" }),
+          json: async () => ({ translation: "شاشة مشتركة مميزة" }),
         };
       }
       return { ok: false, status: 429, json: async () => ({}) };
     };
 
-    const text = await translateEnglishToArabic("Netflix Shared Screen");
-    assert.equal(text, "نتفليكس شاشة مشتركة");
+    const text = await translateEnglishToArabic("Premium Shared Screen");
+    assert.equal(text, "شاشة مشتركة مميزة");
     assert.ok(calls.some((url) => url.includes("translate.googleapis.com")));
     assert.ok(calls.some((url) => url.includes("lingva.ml")));
   });
@@ -80,7 +80,7 @@ describe("English to Arabic translation", () => {
       json: async () => ({}),
     });
     await assert.rejects(
-      () => translateEnglishToArabic("Prime Video"),
+      () => translateEnglishToArabic("Streaming Bundle"),
       /Translate HTTP 503|unavailable/i,
     );
   });

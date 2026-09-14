@@ -6,11 +6,8 @@ import path from "path";
 import { closeDatabase, initDatabase } from "../src/db/connection.js";
 import { persistLiveCatalog } from "../src/db/persist.js";
 import { seedDatabase } from "../src/db/seed.js";
-import { insertService, listServices, updateService } from "../src/models/Service.js";
+import { listServices } from "../src/models/Service.js";
 import { getAllSettings, updateSettings } from "../src/models/Settings.js";
-import { commitServiceImage } from "../src/services/serviceImages.js";
-import { getServiceUploadsDir } from "../src/db/connection.js";
-import { RETIRED_FACTORY_SERVICE_IDS } from "../src/config/defaultServices.js";
 
 function tmpDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "gs-persist-"));
@@ -24,18 +21,16 @@ function wipeSqlite(dir) {
   }
 }
 
-function addFixture() {
-  return insertService({
-    id: "fixture-service",
-    nameEn: "Fixture Service",
-    nameAr: "خدمة",
-    descriptionEn: "EN",
-    descriptionAr: "AR",
-    prices: { month: 2, year: 10 },
-  });
-}
+const CODE_SERVICE = {
+  id: "code-service",
+  nameEn: "Code Service",
+  nameAr: "خدمة",
+  descriptionEn: "From source",
+  descriptionAr: "من المصدر",
+  prices: { month: 3, year: 15 },
+};
 
-describe("admin catalog survives restarts", () => {
+describe("catalog comes from source code", () => {
   let dir;
 
   afterEach(() => {
@@ -43,37 +38,32 @@ describe("admin catalog survives restarts", () => {
     if (dir) fs.rmSync(dir, { recursive: true, force: true });
   });
 
-  it("starts empty and does not seed the retired factory catalog", () => {
+  it("starts with whatever DEFAULT_SERVICES contains (empty until you add rows)", () => {
     dir = tmpDir();
     process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
     initDatabase(path.join(dir, "live.db"));
     seedDatabase();
-    const ids = listServices().map((s) => s.id);
-    assert.equal(ids.length, 0);
-    assert.equal(ids.includes("netflix-private"), false);
+    assert.equal(listServices().length, 0);
   });
 
-  it("does not restore a leftover factory catalog dump", () => {
+  it("does not restore leftover JSON catalog dumps", () => {
     dir = tmpDir();
     process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
     fs.mkdirSync(process.env.GODADDY_SYNC_DIR, { recursive: true });
-    const factory = {
-      exportedAt: new Date().toISOString(),
-      services: RETIRED_FACTORY_SERVICE_IDS.map((id, index) => ({
-        id,
-        nameEn: `Factory ${id}`,
-        nameAr: id,
-        descriptionEn: "OLD",
-        descriptionAr: "قديم",
-        typeEn: "Shared Screen",
-        typeAr: "شاشة مشتركة",
-        prices: { month: 1, year: 8 },
-        sortOrder: index,
-      })),
-    };
     fs.writeFileSync(
       path.join(process.env.GODADDY_SYNC_DIR, "latest-catalog.json"),
-      `${JSON.stringify(factory, null, 2)}\n`,
+      `${JSON.stringify({
+        services: [
+          {
+            id: "leftover-dump",
+            nameEn: "Should Not Appear",
+            nameAr: "لا",
+            descriptionEn: "backup",
+            descriptionAr: "نسخة",
+            prices: { month: 1, year: 8 },
+          },
+        ],
+      }, null, 2)}\n`,
     );
 
     initDatabase(path.join(dir, "live.db"));
@@ -81,67 +71,37 @@ describe("admin catalog survives restarts", () => {
     assert.equal(listServices().length, 0);
   });
 
-  it("restores edited prices after the sqlite file is deleted", () => {
+  it("keeps hardcoded services after sqlite is deleted", () => {
     dir = tmpDir();
     process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
     initDatabase(path.join(dir, "live.db"));
-    seedDatabase();
-    addFixture();
-
-    const updated = updateService("fixture-service", {
-      prices: { month: 9.5, year: 40 },
-    });
-    assert.equal(updated.prices.month, 9.5);
-    persistLiveCatalog();
+    seedDatabase([CODE_SERVICE]);
+    assert.equal(listServices()[0].prices.month, 3);
     closeDatabase();
 
     wipeSqlite(dir);
     initDatabase(path.join(dir, "live.db"));
-    seedDatabase();
-
-    const restored = listServices().find((s) => s.id === "fixture-service");
-    assert.equal(restored.prices.month, 9.5);
-    assert.equal(restored.prices.year, 40);
+    seedDatabase([CODE_SERVICE]);
+    const restored = listServices().find((s) => s.id === "code-service");
+    assert.equal(restored.nameEn, "Code Service");
+    assert.equal(restored.descriptionEn, "From source");
+    assert.equal(restored.prices.year, 15);
   });
 
-  it("imports json-engine admin edits into a fresh sqlite database", () => {
+  it("replaces leftover database rows with the code catalog on boot", () => {
     dir = tmpDir();
     process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
-    const jsonPath = path.join(dir, "globalstore.json");
-    initDatabase(path.join(dir, "unused.db"), { engine: "json", jsonPath });
-    seedDatabase();
-    addFixture();
-    updateService("fixture-service", { prices: { month: 7, year: 30 } });
-    persistLiveCatalog();
-    closeDatabase();
-
-    initDatabase(path.join(dir, "live.db"), { jsonPath });
-    seedDatabase();
-    const restored = listServices().find((s) => s.id === "fixture-service");
-    assert.equal(restored.prices.month, 7);
-    assert.equal(restored.prices.year, 30);
+    initDatabase(path.join(dir, "live.db"));
+    seedDatabase([{ ...CODE_SERVICE, id: "old-row", nameEn: "Old" }]);
+    seedDatabase([]);
+    assert.equal(listServices().length, 0);
   });
 
-  it("restores new services, descriptions, email, WhatsApp, and About Us", () => {
+  it("still restores site settings from backup", () => {
     dir = tmpDir();
     process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
     initDatabase(path.join(dir, "live.db"));
     seedDatabase();
-    addFixture();
-
-    updateService("fixture-service", {
-      descriptionEn: "Admin custom desc",
-      descriptionAr: "وصف مخصص",
-      prices: { month: 4, year: 22 },
-    });
-    insertService({
-      id: "admin-special",
-      nameEn: "Admin Special",
-      nameAr: "خاص",
-      descriptionEn: "Added by admin",
-      descriptionAr: "أضيف",
-      prices: { month: 3, year: 12 },
-    });
     updateSettings({
       complaintEmail: "ops-forever@example.com",
       whatsappNumbers: ["96550001111", "96550002222"],
@@ -156,54 +116,10 @@ describe("admin catalog survives restarts", () => {
     initDatabase(path.join(dir, "live.db"));
     seedDatabase();
 
-    const fixture = listServices().find((s) => s.id === "fixture-service");
-    const added = listServices().find((s) => s.id === "admin-special");
     const settings = getAllSettings();
-    assert.equal(fixture.prices.month, 4);
-    assert.equal(fixture.descriptionEn, "Admin custom desc");
-    assert.equal(added?.nameEn, "Admin Special");
-    assert.equal(added?.prices.year, 12);
+    assert.equal(listServices().length, 0);
     assert.equal(settings.complaintEmail, "ops-forever@example.com");
     assert.deepEqual(settings.whatsappNumbers, ["96550001111", "96550002222"]);
     assert.equal(settings.aboutEn, "Custom about forever");
-    assert.equal(settings.aboutAr, "نبذة مخصصة");
-    assert.equal(
-      settings.socialLinks.instagram,
-      "https://instagram.com/globalstore-kuwait",
-    );
-  });
-
-  it("restores uploaded JPEGs after sqlite and the uploads folder are wiped", () => {
-    dir = tmpDir();
-    process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
-    initDatabase(path.join(dir, "live.db"));
-    seedDatabase();
-    addFixture();
-
-    const jpeg = Buffer.from(
-      "ffd8ffe000104a46494600010100000100010000ffdb004300080606070605080707070909080a0c140d0c0b0b0c1912130f141d1a1f1e1d1a1c1c20242e2720222c231c1c2837292c30313434341f27393d38323c2e333432ffc0000b080001000101011100ffc40014100100000000000000000000000000000000ffda00080001000100003f00fbffd9",
-      "hex",
-    );
-    const tmpUpload = path.join(dir, "fresh.jpg");
-    fs.writeFileSync(tmpUpload, jpeg);
-    const committed = commitServiceImage("fixture-service", tmpUpload);
-    updateService("fixture-service", committed);
-    persistLiveCatalog();
-    const uploadsDir = getServiceUploadsDir();
-    closeDatabase();
-
-    wipeSqlite(dir);
-    fs.rmSync(uploadsDir, { recursive: true, force: true });
-
-    initDatabase(path.join(dir, "live.db"));
-    seedDatabase();
-
-    const restored = listServices().find((s) => s.id === "fixture-service");
-    assert.equal(restored.imageUrl, "/api/services/fixture-service/image");
-    assert.ok(restored.imageData && restored.imageData.length > 20);
-    assert.equal(
-      fs.existsSync(path.join(getServiceUploadsDir(), "fixture-service.jpg")),
-      true,
-    );
   });
 });

@@ -124,14 +124,6 @@ describe("services + admin API", () => {
     const item = listed.body.services.find((s) => s.nameEn === "Test Stream");
     assert.ok(item);
     assert.equal(listed.body.services[0].nameEn, "Test Stream");
-
-    const catalogSnap = path.join(
-      process.env.GODADDY_SYNC_DIR,
-      "latest-catalog.json",
-    );
-    assert.equal(fs.existsSync(catalogSnap), true);
-    const snap = JSON.parse(fs.readFileSync(catalogSnap, "utf8"));
-    assert.equal(snap.services[0].nameEn, "Test Stream");
   });
 
   it("marks zero-price services as out of stock", async () => {

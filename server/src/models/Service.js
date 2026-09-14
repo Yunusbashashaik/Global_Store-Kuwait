@@ -185,16 +185,24 @@ export function deleteService(id) {
 
 export function seedServicesIfEmpty(defaults) {
   if (countServices() > 0) return false;
-  const insert = getDb().transaction((services) => {
-    services.forEach((service, index) => {
-      insertService({
-        ...service,
-        sortOrder: index,
-        imageUrl: service.imageUrl || null,
-        imageData: service.imageData || null,
-      });
+  replaceServicesFromCode(defaults);
+  return true;
+}
+
+/** Catalog source of truth is shared/defaultServices.js — not JSON backups. */
+export function replaceServicesFromCode(defaults) {
+  const wanted = Array.isArray(defaults) ? defaults : [];
+  const existing = listServices();
+  existing.forEach((service) => {
+    deleteService(service.id);
+  });
+  wanted.forEach((service, index) => {
+    insertService({
+      ...service,
+      sortOrder: index,
+      imageUrl: service.imageUrl || null,
+      imageData: service.imageData || null,
     });
   });
-  insert(defaults);
-  return true;
+  return wanted.length;
 }
