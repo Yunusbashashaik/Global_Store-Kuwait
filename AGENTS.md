@@ -37,7 +37,7 @@ Local dev works without SMTP: submissions are stored in SQLite (and appended to 
 
 Click the header Admin icon to open a **modal** (no separate `/admin` page). After login, the dashboard offers **Add Services** and **Edit Services** (Services, Complaint Email, Contact Details, About Us). Configure `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and optionally `ADMIN_SESSION_SECRET`. Session token is stored in `localStorage` key `globalstores_admin_token`.
 
-**GoDaddy:** Admin requires the Node process (`npm run build && npm start`). Static FTP uploads cannot serve `/api/admin/login` and will show “Load failed”. Verify `GET /api/health` on the live domain. If the API is on another host, set `apiUrl` in `client/public/runtime-config.js`.
+**GoDaddy:** Deploy **`main`**. Run `npm run build && npm start` (Passenger startup file `app.js`). Static FTP of `client/dist` cannot serve `/api`. Verify `GET /api/health`. GitHub Pages is a static preview only and is not used on GoDaddy.
 
 ### E2E notes
 

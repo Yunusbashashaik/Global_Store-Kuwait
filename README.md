@@ -4,8 +4,8 @@ published: false
 
 # Global-Stores
 
-> **Open the website:** [https://yunusbashashaik.github.io/Global_Store-Kuwait/](https://yunusbashashaik.github.io/Global_Store-Kuwait/)  
-> Do **not** use `yunusbashashaik.github.io` alone — that is a different site and shows GitHub’s 404.
+> **GitHub Pages preview:** [https://yunusbashashaik.github.io/Global_Store-Kuwait/](https://yunusbashashaik.github.io/Global_Store-Kuwait/)  
+> Do **not** use `yunusbashashaik.github.io` alone. Live store + Admin = **GoDaddy Node** from branch **`main`**.
 
 GlobalStore.com — bilingual digital subscription marketplace for Kuwait (KWD).
 
@@ -52,23 +52,23 @@ Out-of-stock services use price `0`, show an **Out of Stock** note, and disable 
 
 ### Deploy on GoDaddy (Node.js)
 
-Admin login needs a **running Node app**. If `https://YOUR-DOMAIN/api/health` does not return `{"ok":true}`, login cannot work.
-
-**cPanel Application Manager (Passenger)**
+This is the real website. Always deploy branch **`main`**. GitHub Pages is only a static preview and is not required for GoDaddy.
 
 1. Setup → Application Manager → Register Application  
-2. Application root = this repo folder  
-3. Application URL = your domain (or subdomain) **root**, not a `/public_html` static copy  
+2. Application root = this repo folder (contains `app.js`)  
+3. Application URL = your domain **root**  
 4. Application startup file: `app.js`  
 5. Node.js version: 20+  
 6. In the app directory:
    ```bash
+   git pull origin main
    npm install
    npm run build
    ```
 7. Restart the application  
-8. Visit `https://YOUR-DOMAIN/api/health` — you must see JSON `ok: true`  
-9. Then sign in with `admin` / `Wz%861?01`
+8. Visit `https://YOUR-DOMAIN/api/health` — you must see JSON `ok: true`
+
+`npm run build` then `npm start` (or Passenger) serves `client/dist` and `/api`. The hardcoded catalog is loaded from Git on every start.
 
 Do **not** FTP only `client/dist` into `public_html`. That is static hosting and `/api/health` will 404.
 
@@ -84,7 +84,7 @@ window.__GLOBALSTORE_CONFIG__ = { apiUrl: "https://your-node-api-url" };
 
 Edit **`shared/defaultServices.js`** and put JPEGs in **`client/public/service-images/{id}.jpg`**. Commit and deploy. That catalog ships with the code, so it **does not vanish** on GoDaddy the way Admin-only database rows did.
 
-The storefront starts with an empty array until you add objects there. JSON dumps under `godaddy-sync/` and `server/data/` are not imported as services.
+The storefront catalog is the 42 services in that file. JSON dumps under `godaddy-sync/` and `server/data/` are not imported as services.
 
 Admin can still change complaint email / WhatsApp / About Us. Do not use Admin to add the public catalog if you want it to survive every publish.
 
@@ -99,21 +99,12 @@ Optional env: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `
 
 See `Tech. Document` for full product requirements.
 
-## Deployment (GitHub Pages) — free account OK
+## Deployment (GitHub Pages preview)
 
-You **do not need a paid GitHub plan** for a **public** repository. GitHub Pages is included on free accounts. This repo is public.
-
-Pushes to **`main`** run [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which builds the site and pushes it to the root of the **`gh-pages`** branch.
-
-### One-time setup (iPhone, iPad, or computer)
+Pushes to **`main`** run [`.github/workflows/deploy-pages-actions.yml`](.github/workflows/deploy-pages-actions.yml). There is no `gh-pages` deploy.
 
 1. Open **https://github.com/Yunusbashashaik/Global_Store-Kuwait/settings/pages**
-2. Under **Build and deployment** → **Source**, choose **Deploy from a branch**
-3. **Branch:** `gh-pages` · **Folder:** `/ (root)` · **Save**
-4. Wait 1–2 minutes, then open:
+2. **Source:** GitHub Actions → Save
+3. Open **https://yunusbashashaik.github.io/Global_Store-Kuwait/**
 
-   **https://yunusbashashaik.github.io/Global_Store-Kuwait/**
-
-If the workflow has not run yet, go to **Actions** → **Deploy to GitHub Pages** → **Run workflow**.
-
-The homepage uses the hardcoded catalog in `shared/defaultServices.js` if the API is unavailable. **Admin** (settings), and **complaint email via SMTP** need the Node server (`npm start` on a host such as Render or GoDaddy Node).
+The live catalog, Admin, and complaints need **GoDaddy Node** (`git pull origin main`, then `npm run build && npm start`).

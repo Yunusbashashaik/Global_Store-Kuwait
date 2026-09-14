@@ -1,10 +1,12 @@
-name: Deploy Pages (GitHub Actions)
+name: Deploy Pages from main
 
-# Use only when Settings → Pages → Source = GitHub Actions.
-# Disabled on push while the site uses legacy gh-pages branch deploy,
-# so it does not fight pages-build-deployment / static uploads.
+# Builds the storefront from main. No gh-pages branch.
+# Settings → Pages → Source: GitHub Actions
+# Site: https://yunusbashashaik.github.io/Global_Store-Kuwait/
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
