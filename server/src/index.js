@@ -2,7 +2,13 @@ import cors from "cors";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getDbEngine, initDatabase } from "./db/connection.js";
+import {
+  getActiveDbPath,
+  getActiveJsonPath,
+  getDataDir,
+  getDbEngine,
+  initDatabase,
+} from "./db/connection.js";
 import { mountUploadStatic } from "./middleware/staticUploads.js";
 import { seedDatabase } from "./db/seed.js";
 import { adminRouter } from "./routes/admin.js";
@@ -17,6 +23,9 @@ const HOST = process.env.HOST || "0.0.0.0";
 
 initDatabase();
 seedDatabase();
+console.log(
+  `[globalstore] catalog data dir=${getDataDir()} db=${getActiveDbPath()} json=${getActiveJsonPath()} engine=${getDbEngine()}`,
+);
 
 const app = express();
 app.set("trust proxy", 1);
@@ -30,6 +39,10 @@ app.get("/api/health", (_req, res) => {
     service: "global-store-api",
     db: getDbEngine(),
     services: listServices().length,
+    dataDir: getDataDir(),
+    dbFile: getActiveDbPath(),
+    jsonFile: getActiveJsonPath(),
+    cwd: process.cwd(),
     time: new Date().toISOString(),
   });
 });

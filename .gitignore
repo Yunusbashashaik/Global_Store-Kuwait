@@ -2,7 +2,9 @@ node_modules/
 dist/
 .env
 .env.local
-server/data/
+server/data/*
+!server/data/.gitkeep
+!server/data/README.md
 *.log
 .DS_Store
 godaddy-sync/*

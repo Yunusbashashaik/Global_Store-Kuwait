@@ -2,7 +2,7 @@
 
 Admin add/edit writes a copy of the live catalog, site settings, and newly uploaded service images into this folder so you can back them up **before** copying the GitHub release onto GoDaddy.
 
-Runtime files in this folder are **not** committed (see `.gitignore`). GitHub code deploys do not include `server/data/` SQLite or uploads.
+In File Manager, `server/data` is next to `app.js` in the **Node application root**, not necessarily under `public_html`. GitHub zips do not include the database files. After Node starts, use `/api/health` → `dataDir` to find `globalstore.db` / `globalstore.json`.
 
 ## What lands here
 

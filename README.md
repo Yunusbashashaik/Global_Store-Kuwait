@@ -80,9 +80,14 @@ If the website and API use different URLs, edit `client/public/runtime-config.js
 window.__GLOBALSTORE_CONFIG__ = { apiUrl: "https://your-node-api-url" };
 ```
 
-Keep `server/data/` on a persistent disk so SQLite and uploads survive restarts. Redeploying GitHub code (or FTP of a fresh checkout) **does not include** `server/data/`. If that folder is replaced or the Node app root changes, Admin-added services disappear until you restore `globalstore.db` / `globalstore.json`.
+**`server/data` is not in the GitHub zip.** Git ignores the database files. cPanel File Manager also usually opens `public_html`, which is not the Node app folder. The live files appear only after Node starts, next to `app.js` → `server/data/` (`globalstore.db` and/or `globalstore.json`).
 
-Check `https://YOUR-DOMAIN/api/health` — `services` is the live catalog count on **that** Node process. If health is missing, Apache is serving static files and Admin saves never reach the storefront.
+1. Open `https://YOUR-DOMAIN/api/health`.
+2. Use `dataDir`, `dbFile`, and `jsonFile` in that JSON — that is the real path on disk.
+3. In File Manager go to **Application Manager → Application root** (the folder that contains `app.js`), then `server/data`. Turn on **Show Hidden Files**.
+4. If `/api/health` 404s, you are looking at static hosting. There will be no `server/data` under `public_html` until Node is the app that serves the domain.
+
+Keep that folder when you upload a new release. Replacing it (or uploading only `client/dist`) wipes Admin-added services.
 
 The storefront ships with an **empty catalog**. Add services one by one in Admin after publish. There is no baked-in Netflix/Prime/etc. list. Leftover **full** factory dumps are not re-imported. Services you add in Admin (including Netflix-named products) are marked `origin: "live"` and restored on restart.
 
