@@ -124,7 +124,7 @@ export function createAdminService(req, res) {
       uploadedFilename: req.file?.filename,
       imageUrl,
     });
-    persistLiveCatalog();
+    persistLiveCatalog({ allowEmpty: true });
 
     res.status(201).json({ service });
   } catch (err) {
@@ -171,7 +171,7 @@ export function updateAdminService(req, res) {
       uploadedFilename: req.file?.filename,
       imageUrl: updated.imageUrl,
     });
-    persistLiveCatalog();
+    persistLiveCatalog({ allowEmpty: true });
     res.json({ service: updated });
   } catch (err) {
     console.error("Service update failed:", err);
@@ -188,7 +188,7 @@ export function deleteAdminService(req, res) {
     }
     removeServiceImage(req.params.id);
     snapshotAdminChange({ action: "delete-service" });
-    persistLiveCatalog();
+    persistLiveCatalog({ allowEmpty: true });
     res.json({ ok: true, id: req.params.id });
   } catch (err) {
     console.error("Service delete failed:", err);
@@ -224,7 +224,7 @@ export function putAdminSettings(req, res) {
   try {
     const settings = updateSettings(req.body || {});
     snapshotAdminChange({ action: "update-settings" });
-    persistLiveCatalog();
+    persistLiveCatalog({ allowEmpty: true });
     res.json({ settings });
   } catch (err) {
     console.error("Settings update failed:", err);

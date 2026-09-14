@@ -80,11 +80,13 @@ If the website and API use different URLs, edit `client/public/runtime-config.js
 window.__GLOBALSTORE_CONFIG__ = { apiUrl: "https://your-node-api-url" };
 ```
 
-Keep `server/data/` on a persistent disk so SQLite and uploads survive restarts.
+Keep `server/data/` on a persistent disk so SQLite and uploads survive restarts. Redeploying GitHub code (or FTP of a fresh checkout) **does not include** `server/data/`. If that folder is replaced or the Node app root changes, Admin-added services disappear until you restore `globalstore.db` / `globalstore.json`.
 
-The storefront ships with an **empty catalog**. Add services one by one in Admin after publish. There is no baked-in Netflix/Prime/etc. list, and leftover factory backups are not re-imported.
+Check `https://YOUR-DOMAIN/api/health` — `services` is the live catalog count on **that** Node process. If health is missing, Apache is serving static files and Admin saves never reach the storefront.
 
-Admin adds/edits are written to **both** `server/data/globalstore.db` (or the JSON fallback) **and** `server/data/globalstore.json`. That backup includes services you added (prices, names, descriptions, images, stock), complaint email, WhatsApp/contact numbers, About Us, and social links. On every app start the server restores **your** backup — not the old factory catalog.
+The storefront ships with an **empty catalog**. Add services one by one in Admin after publish. There is no baked-in Netflix/Prime/etc. list. Leftover **full** factory dumps are not re-imported. Services you add in Admin (including Netflix-named products) are marked `origin: "live"` and restored on restart.
+
+Admin adds/edits are written to **both** `server/data/globalstore.db` (or the JSON fallback) **and** `server/data/globalstore.json`. That backup includes services you added (prices, names, descriptions, images, stock), complaint email, WhatsApp/contact numbers, About Us, and social links. On every app start the server restores **your** backup — not the old factory catalog. A restart will not overwrite a non-empty backup with an empty database.
 
 The public homepage also keeps the last live catalog in the browser (`localStorage` key `globalstores_services_v3`).
 

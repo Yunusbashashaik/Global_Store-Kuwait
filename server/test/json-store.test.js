@@ -12,6 +12,7 @@ const testDir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-json-"));
 
 describe("JSON file database fallback", () => {
   before(() => {
+    process.env.GODADDY_SYNC_DIR = path.join(testDir, "godaddy-sync");
     initDatabase(path.join(testDir, "unused.db"), {
       engine: "json",
       jsonPath: path.join(testDir, "store.json"),

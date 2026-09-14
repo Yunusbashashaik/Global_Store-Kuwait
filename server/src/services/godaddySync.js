@@ -51,7 +51,15 @@ export function snapshotAdminChange({ action, uploadedFilename, imageUrl } = {})
     const settingsPath = path.join(dir, "latest-settings.json");
     fs.writeFileSync(
       catalogPath,
-      `${JSON.stringify({ services: listServices() }, null, 2)}\n`,
+      `${JSON.stringify(
+        {
+          origin: "live",
+          exportedAt: new Date().toISOString(),
+          services: listServices(),
+        },
+        null,
+        2,
+      )}\n`,
     );
     fs.writeFileSync(
       settingsPath,

@@ -24,4 +24,4 @@ Override the folder with `GODADDY_SYNC_DIR` if you want it outside the repo.
    - Keep `server/data/globalstore.db` on the server (do not overwrite it with an empty Git checkout)
 4. Restart the Node application.
 
-If the GoDaddy site is a fresh install with an empty database, import `latest-catalog.json` / `latest-settings.json` only when that snapshot is **your** admin-added catalog. Delete any old factory dump (Netflix, Prime, and the rest) so those rows cannot come back. Do not replace a healthy production database blindly.
+If the GoDaddy site is a fresh install with an empty database, import `latest-catalog.json` / `latest-settings.json` only when that snapshot is **your** admin-added catalog. A live snapshot includes `"origin": "live"`. Delete any old factory dump (the full Netflix/Prime list with no live origin) so those rows cannot come back. Do not replace a healthy production database blindly. After you add services in Admin, do not copy a Git checkout over `server/data/` — that is why the homepage goes empty again.

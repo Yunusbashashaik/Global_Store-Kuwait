@@ -38,6 +38,7 @@ function catalogFromUnknown(parsed) {
   return {
     services,
     settings,
+    origin: parsed.origin || null,
     stamp: Math.max(stampOf(services), exported),
     count: services.length,
   };
@@ -69,7 +70,8 @@ export function writeDurableCatalog(payload) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   const existing = readJson(filePath) || {};
   const next = {
-    services: payload.services || existing.services || [],
+    origin: payload.origin || existing.origin || "live",
+    services: Array.isArray(payload.services) ? payload.services : existing.services || [],
     settings: payload.settings || existing.settings || {},
     complaints: existing.complaints || payload.complaints || [],
     exportedAt: new Date().toISOString(),

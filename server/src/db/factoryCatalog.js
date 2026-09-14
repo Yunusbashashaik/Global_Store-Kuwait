@@ -3,7 +3,8 @@ import { deleteService, listServices } from "../models/Service.js";
 import { removeServiceImage } from "../services/serviceImages.js";
 
 const RETIRED = new Set(RETIRED_FACTORY_SERVICE_IDS);
-const FACTORY_DUMP_MIN = 8;
+/** Full leftover factory snapshots only — not a store owner re-adding a handful of the same products. */
+const FACTORY_DUMP_MIN = 20;
 
 export function serviceRecordId(item) {
   return item?.id || "";

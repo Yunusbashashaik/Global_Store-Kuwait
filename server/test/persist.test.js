@@ -81,6 +81,73 @@ describe("admin catalog survives restarts", () => {
     assert.equal(listServices().length, 0);
   });
 
+  it("keeps admin-added services that reuse old product slugs across restarts", () => {
+    dir = tmpDir();
+    process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
+    initDatabase(path.join(dir, "live.db"));
+    seedDatabase();
+    RETIRED_FACTORY_SERVICE_IDS.slice(0, 10).forEach((id, index) => {
+      insertService({
+        id,
+        nameEn: `Live ${id}`,
+        nameAr: id,
+        descriptionEn: "Added in admin after publish",
+        descriptionAr: "أضيف",
+        prices: { month: index + 1, year: 10 },
+      });
+    });
+    persistLiveCatalog();
+    assert.equal(listServices().length, 10);
+    closeDatabase();
+
+    wipeSqlite(dir);
+    initDatabase(path.join(dir, "live.db"));
+    seedDatabase();
+    assert.equal(listServices().length, 10);
+    assert.equal(listServices()[0].descriptionEn, "Added in admin after publish");
+  });
+
+  it("does not persist an empty sqlite over a live catalog backup", () => {
+    dir = tmpDir();
+    process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
+    initDatabase(path.join(dir, "live.db"));
+    seedDatabase();
+    addFixture();
+    persistLiveCatalog();
+    closeDatabase();
+
+    wipeSqlite(dir);
+    initDatabase(path.join(dir, "live.db"));
+    persistLiveCatalog();
+    seedDatabase();
+    assert.equal(
+      listServices().find((s) => s.id === "fixture-service")?.nameEn,
+      "Fixture Service",
+    );
+  });
+
+  it("does not wipe live sqlite services that reuse old product slugs", () => {
+    dir = tmpDir();
+    process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");
+    initDatabase(path.join(dir, "live.db"));
+    seedDatabase();
+    RETIRED_FACTORY_SERVICE_IDS.slice(0, 10).forEach((id, index) => {
+      insertService({
+        id,
+        nameEn: `Live ${id}`,
+        nameAr: id,
+        descriptionEn: "Stay",
+        descriptionAr: "أضيف",
+        prices: { month: index + 1, year: 10 },
+      });
+    });
+    persistLiveCatalog();
+    closeDatabase();
+    initDatabase(path.join(dir, "live.db"));
+    seedDatabase();
+    assert.equal(listServices().length, 10);
+  });
+
   it("restores edited prices after the sqlite file is deleted", () => {
     dir = tmpDir();
     process.env.GODADDY_SYNC_DIR = path.join(dir, "godaddy-sync");

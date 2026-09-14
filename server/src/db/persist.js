@@ -79,7 +79,7 @@ function rewriteRestoredImageUrls(services) {
   });
 }
 
-export function persistLiveCatalog() {
+export function persistLiveCatalog({ allowEmpty = false } = {}) {
   try {
     persistServiceImageFiles(listServices());
     listServices().forEach((service) => {
@@ -90,7 +90,17 @@ export function persistLiveCatalog() {
       }
     });
     const rows = getDb().prepare("SELECT * FROM services").all();
+    if (!rows.length && !allowEmpty) {
+      const existing = readDurableCatalog();
+      if (existing?.services?.length) {
+        console.warn(
+          "[globalstore] skip persisting empty catalog over existing backup",
+        );
+        return;
+      }
+    }
     writeDurableCatalog({
+      origin: "live",
       services: rows,
       settings: rawSettingsFromDb(),
     });
@@ -218,7 +228,10 @@ export function restoreCatalogFromBackup() {
 
   let changed = false;
 
-  const incoming = filterFactoryDumpServices(backup.services);
+  const incoming =
+    backup.origin === "live"
+      ? backup.services
+      : filterFactoryDumpServices(backup.services);
   if (incoming.length) {
     if (live.length === 0) {
       incoming.forEach((item, index) => {
