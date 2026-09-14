@@ -7,5 +7,3 @@ server/data/
 .DS_Store
 godaddy-sync/*
 !godaddy-sync/README.md
-client/public/service-images/*
-!client/public/service-images/.gitkeep

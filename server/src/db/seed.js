@@ -1,14 +1,12 @@
 import { persistLiveCatalog, restoreCatalogFromBackup } from "./persist.js";
 import { DEFAULT_SERVICES } from "../config/defaultServices.js";
-import { seedServicesIfEmpty } from "../models/Service.js";
+import { replaceServicesFromCode } from "../models/Service.js";
 import { seedSettingsIfEmpty } from "../models/Settings.js";
-import { purgeFactoryCatalogIfPresent } from "./factoryCatalog.js";
 
-export function seedDatabase() {
+export function seedDatabase(services = DEFAULT_SERVICES) {
   const restored = restoreCatalogFromBackup();
-  const factoryPurged = purgeFactoryCatalogIfPresent();
-  const servicesSeeded = seedServicesIfEmpty(DEFAULT_SERVICES);
+  replaceServicesFromCode(services);
   const settingsSeeded = seedSettingsIfEmpty();
   persistLiveCatalog();
-  return { servicesSeeded, settingsSeeded, restored, factoryPurged };
+  return { servicesSeeded: Array.isArray(services) ? services.length : 0, settingsSeeded, restored };
 }

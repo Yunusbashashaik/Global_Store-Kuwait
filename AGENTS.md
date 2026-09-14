@@ -21,9 +21,13 @@ Vite proxies `/api` to port **3001** during development. For production-style se
 - **Test:** `npm run test` (server API tests only)
 - **Build:** `npm run build`
 
+### Catalog
+
+Public services come from **`shared/defaultServices.js`** (committed in Git) plus JPEGs in `client/public/service-images/`. Startup replaces the database catalog with that file. JSON backups are not re-imported as services.
+
 ### Dynamic database
 
-Catalog, site settings (complaint email, WhatsApp numbers, About Us, social links), and complaints persist in **SQLite** at `server/data/globalstore.db` (override with `DATABASE_PATH`). Uploaded service images live under `server/data/uploads/services/` and are served from `/api/uploads/...`. Public pages load live data via `GET /api/services` and `GET /api/settings`.
+Site settings (complaint email, WhatsApp numbers, About Us, social links) and complaints persist in **SQLite** at `server/data/globalstore.db` (override with `DATABASE_PATH`). Public pages load live data via `GET /api/services` and `GET /api/settings`.
 
 ### Complaint email
 

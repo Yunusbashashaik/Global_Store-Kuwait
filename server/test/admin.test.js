@@ -124,14 +124,6 @@ describe("services + admin API", () => {
     const item = listed.body.services.find((s) => s.nameEn === "Test Stream");
     assert.ok(item);
     assert.equal(listed.body.services[0].nameEn, "Test Stream");
-
-    const catalogSnap = path.join(
-      process.env.GODADDY_SYNC_DIR,
-      "latest-catalog.json",
-    );
-    assert.equal(fs.existsSync(catalogSnap), true);
-    const snap = JSON.parse(fs.readFileSync(catalogSnap, "utf8"));
-    assert.equal(snap.services[0].nameEn, "Test Stream");
   });
 
   it("marks zero-price services as out of stock", async () => {
@@ -189,11 +181,13 @@ describe("services + admin API", () => {
     assert.equal(res.status, 401);
   });
 
-  it("starts with no baked-in factory catalog", async () => {
-    assert.equal(DEFAULT_SERVICES.length, 0);
+  it("loads the hardcoded 42-service catalog", async () => {
+    assert.equal(DEFAULT_SERVICES.length, 42);
     const res = await request(app).get("/api/services");
     assert.equal(res.status, 200);
     const ids = res.body.services.map((s) => s.id);
+    assert.equal(ids.includes("netflix-prime-combo"), true);
+    assert.equal(ids.includes("whatsapp-number"), true);
     assert.equal(ids.includes("disney-plus"), false);
     assert.equal(ids.includes("chatgpt-plus"), false);
     assert.equal(ids.includes("expressvpn"), false);

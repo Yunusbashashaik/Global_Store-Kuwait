@@ -342,7 +342,7 @@ export async function fetchPublicServices() {
   if (await hasBackendApi()) {
     try {
       const data = await requestJson("/api/services");
-      if (Array.isArray(data.services)) {
+      if (Array.isArray(data.services) && data.services.length) {
         writeCachedServices(data.services);
         return data.services;
       }
