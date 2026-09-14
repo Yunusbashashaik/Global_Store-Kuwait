@@ -1,40 +1,41 @@
-# GitHub Pages setup (free account)
+# GitHub Pages vs GoDaddy
 
-## Your store URL
+Code lives on **`main` only**. There is no `gh-pages` deploy.
 
-### **https://yunusbashashaik.github.io/Global-Stores/**
+## GitHub Pages (static preview)
 
----
+URL: **https://yunusbashashaik.github.io/Global_Store-Kuwait/**
 
-## How deploy works
+Do not open `https://yunusbashashaik.github.io/` — that is not this repo.
 
-Pushing to `main` runs **Deploy to GitHub Pages**, which builds the client and publishes a clean orphan commit to the `gh-pages` branch (root only). GitHub then serves that branch.
+1. Open **https://github.com/Yunusbashashaik/Global_Store-Kuwait/settings/pages**
+2. **Build and deployment** → **Source:** **GitHub Actions** (not “Deploy from a branch”)
+3. Save
+4. Push to **`main`** (or Actions → **Deploy Pages from main** → Run workflow)
+5. Open the URL above
 
-Do **not** keep a “Deploy static content to Pages” workflow that uploads the whole repo — it fights the real deploy and can leave Pages stuck in `building`.
+Pages is a **static** copy of the catalog in Git. It has no Node `/api`. Admin login and complaint SMTP need GoDaddy (or any Node host).
 
-## If Actions shows “pages build and deployment” stuck / in progress
+## GoDaddy (Node.js) — this is the live store
 
-That workflow is GitHub’s **legacy branch deploy**. When it hangs or the site status is `errored` / stuck `building`, do this once:
+Use **`main`**. Node builds the site at `/` and serves the API.
 
-1. Open **https://github.com/Yunusbashashaik/Global-Stores/settings/pages**
-2. Under **Build and deployment** → **Source**, choose **GitHub Actions**
-3. Save, then open **Actions** → **Deploy Pages (GitHub Actions)** → **Run workflow**
-4. Wait 1–2 minutes, then hard-refresh the store URL above
+1. Application Manager → Register Application  
+2. Application root = this repo folder (the folder that contains `app.js`)  
+3. Application URL = your domain root (not a static `public_html` copy of `client/dist`)  
+4. Startup file: **`app.js`**  
+5. Node 20+  
+6. In that folder:
+   ```bash
+   git pull origin main
+   npm install
+   npm run build
+   ```
+7. Restart the application  
+8. Check `https://YOUR-DOMAIN/api/health` — must show `"ok": true`
 
-### Fallback (keep branch deploy)
+`npm run build` uses base `/` so it matches a real domain. Do **not** set `VITE_BASE_PATH=/Global_Store-Kuwait/` on GoDaddy.
 
-1. Same Pages settings page
-2. **Source:** Deploy from a branch
-3. **Branch:** `gh-pages` · **Folder:** `/ (root)`
-4. Click **Save** again (even if already selected) — this clears an `errored` / stuck `building` state
-5. Cancel any hung **Deploy static content to Pages** / **Deploy Pages (GitHub Actions)** runs in the Actions tab
-6. Wait for the new `pages-build-deployment` run to finish (often 2–8 minutes), or re-run **Deploy to GitHub Pages**
+The 42 services and photos are in `shared/defaultServices.js` and `client/public/service-images/`. Every `npm start` / Passenger start loads them from that code, so they do not vanish.
 
----
-
-## Wrong URLs
-
-| URL | Result |
-|-----|--------|
-| `yunusbashashaik.github.io` | Not your store |
-| `yunusbashashaik.github.io/Global-Stores/` | **Correct homepage** |
+To update services later: change those files on **`main`**, pull on GoDaddy, `npm run build`, restart.

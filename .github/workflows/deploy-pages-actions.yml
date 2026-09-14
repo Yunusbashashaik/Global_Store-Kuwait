@@ -1,10 +1,12 @@
-name: Deploy Pages (GitHub Actions)
+name: Deploy Pages from main
 
-# Use only when Settings → Pages → Source = GitHub Actions.
-# Disabled on push while the site uses legacy gh-pages branch deploy,
-# so it does not fight pages-build-deployment / static uploads.
+# Builds the storefront from main. No gh-pages branch.
+# Settings → Pages → Source: GitHub Actions
+# Site: https://yunusbashashaik.github.io/Global_Store-Kuwait/
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -29,7 +31,7 @@ jobs:
       - name: Build client
         run: npm run build -w client
         env:
-          VITE_BASE_PATH: /Global-Stores/
+          VITE_BASE_PATH: /Global_Store-Kuwait/
       - name: SPA fallback + Jekyll bypass
         run: |
           cp client/dist/index.html client/dist/404.html
