@@ -305,4 +305,62 @@ describe("services + admin API", () => {
     const del = await request(app).delete(`/api/admin/services/${FIXTURE_ID}`);
     assert.equal(del.status, 401);
   });
+
+  it("creates an optional offer and hides it from public after expiry", async () => {
+    const login = await request(app)
+      .post("/api/admin/login")
+      .send({ username: "admin", password: "Wz%861?01" });
+    const token = login.body.token;
+
+    const none = await request(app)
+      .post("/api/admin/services")
+      .set("Authorization", `Bearer ${token}`)
+      .field("nameEn", "Regular Add")
+      .field("nameAr", "عادي")
+      .field("descriptionEn", "EN")
+      .field("descriptionAr", "AR")
+      .field("priceMonth", "1")
+      .field("priceYear", "8")
+      .field("offerType", "none");
+    assert.equal(none.status, 201);
+    assert.equal(none.body.service.offerType, "none");
+
+    const expired = await request(app)
+      .post("/api/admin/services")
+      .set("Authorization", `Bearer ${token}`)
+      .field("nameEn", "Expired Eid")
+      .field("nameAr", "عيد")
+      .field("descriptionEn", "EN")
+      .field("descriptionAr", "AR")
+      .field("priceMonth", "1")
+      .field("priceYear", "8")
+      .field("offerType", "eid")
+      .field("offerExpiresAt", new Date(Date.now() - 5000).toISOString());
+    assert.equal(expired.status, 201);
+
+    const active = await request(app)
+      .post("/api/admin/services")
+      .set("Authorization", `Bearer ${token}`)
+      .field("nameEn", "Active Special")
+      .field("nameAr", "خاص")
+      .field("descriptionEn", "EN")
+      .field("descriptionAr", "AR")
+      .field("priceMonth", "2")
+      .field("priceYear", "9")
+      .field("offerType", "special")
+      .field("offerExpiresAt", new Date(Date.now() + 60_000).toISOString());
+    assert.equal(active.status, 201);
+
+    const publicList = await request(app).get("/api/services");
+    const adminList = await request(app)
+      .get("/api/admin/services")
+      .set("Authorization", `Bearer ${token}`);
+    assert.equal(
+      publicList.body.services.some((s) => s.nameEn === "Expired Eid"),
+      false,
+    );
+    assert.ok(publicList.body.services.some((s) => s.nameEn === "Active Special"));
+    assert.ok(publicList.body.services.some((s) => s.nameEn === "Regular Add"));
+    assert.ok(adminList.body.services.some((s) => s.nameEn === "Expired Eid"));
+  });
 });

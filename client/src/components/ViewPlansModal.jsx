@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useCart } from "../cart/CartContext.jsx";
 import { isOutOfStock } from "../data/catalog.js";
+import { isActiveOffer } from "@shared/offers.js";
 import GlassModal from "./GlassModal.jsx";
+import OfferBadge from "./OfferBadge.jsx";
 import ServiceIcon from "./ServiceIcon.jsx";
 
 export default function ViewPlansModal({ service, lang, t, onClose }) {
   const [duration, setDuration] = useState("month");
   const { addItem, getQty, increment, decrement, itemKey } = useCart();
-  const oos = isOutOfStock(service);
+  const oos = !isActiveOffer(service) && isOutOfStock(service);
   const price = oos ? 0 : service.prices[duration];
   const name = lang === "ar" ? service.nameAr : service.nameEn;
   const type =
@@ -31,7 +33,9 @@ export default function ViewPlansModal({ service, lang, t, onClose }) {
         <div className="view-plans-hero">
           <ServiceIcon service={service} size="md" />
           <p className="service-card-type">{type}</p>
-          {oos ? (
+          {isActiveOffer(service) ? (
+            <OfferBadge service={service} t={t} lang={lang} inline />
+          ) : oos ? (
             <p className="service-oos-badge service-oos-badge--inline">{t.outOfStock}</p>
           ) : null}
         </div>

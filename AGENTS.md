@@ -23,11 +23,11 @@ Vite proxies `/api` to port **3001** during development. For production-style se
 
 ### Catalog
 
-Public services come from **`shared/defaultServices.js`** (committed in Git) plus JPEGs in `client/public/service-images/`. Startup replaces the database catalog with that file. JSON backups are not re-imported as services.
+Public services come from the **live API/database**. `shared/defaultServices.js` plus JPEGs in `client/public/service-images/` seed an **empty** durable store once. Startup must not replace existing admin rows. JSON backups are not used to wipe services.
 
 ### Dynamic database
 
-Site settings (complaint email, WhatsApp numbers, About Us, social links) and complaints persist in **SQLite** at `server/data/globalstore.db` (override with `DATABASE_PATH`). Public pages load live data via `GET /api/services` and `GET /api/settings`.
+Site settings, catalog, and complaints persist in SQLite/JSON under **`DATA_DIR`** (prefer a folder **outside** the app package, e.g. `~/global-store-kuwait-data` or `/local/global-store-kuwait-data`; override with `DATA_DIR` / `DATABASE_PATH`). Legacy `server/data` is migrated once. Public pages load live data via `GET /api/services` and `GET /api/settings`. Health should report `dataDir`, `storePath`, `snapshotSavedAt`, `catalogSeededThisBoot`, `catalogSeeded`, `dataDirInsideApp`.
 
 ### Complaint email
 
@@ -44,3 +44,4 @@ Click the header Admin icon to open a **modal** (no separate `/admin` page). Aft
 - WhatsApp buttons open `wa.me` in a new tab (external; no local WhatsApp service). Numbers come from the database settings.
 - Arabic mode toggles `body.rtl` and persists language in `localStorage` key `globalstores_lang`.
 - Services with price `0` / `outOfStock` show an Out of Stock badge and disable Add to Cart.
+- Optional Eid/Special offers replace the Out of Stock badge with a countdown while active; expired offer services disappear from the public catalog only.

@@ -253,6 +253,12 @@ export async function adminCreateService(token, payload, imageFile) {
   if (payload.outOfStock !== undefined) {
     formData.append("outOfStock", String(Boolean(payload.outOfStock)));
   }
+  if (payload.offerType !== undefined) {
+    formData.append("offerType", payload.offerType || "none");
+  }
+  if (payload.offerExpiresAt !== undefined && payload.offerExpiresAt !== null) {
+    formData.append("offerExpiresAt", String(payload.offerExpiresAt));
+  }
   if (imageFile) formData.append("image", imageFile);
 
   const data = await requestJson("/api/admin/services", {
@@ -282,6 +288,12 @@ export async function adminSaveService(token, id, payload, imageFile) {
     }
     if (payload.outOfStock !== undefined) {
       formData.append("outOfStock", String(Boolean(payload.outOfStock)));
+    }
+    if (payload.offerType !== undefined) {
+      formData.append("offerType", payload.offerType || "none");
+    }
+    if (payload.offerExpiresAt !== undefined && payload.offerExpiresAt !== null) {
+      formData.append("offerExpiresAt", String(payload.offerExpiresAt));
     }
     formData.append("image", imageFile);
     const data = await requestJson(`/api/admin/services/${id}`, {

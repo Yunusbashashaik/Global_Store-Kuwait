@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { getDb, UPLOADS_DIR } from "../db/connection.js";
+import { getDb, getUploadsDir } from "../db/connection.js";
 import { getSetting } from "../models/Settings.js";
 import { sendComplaintEmail } from "../services/mail.js";
 import { DEFAULT_SETTINGS } from "../config/defaults.js";
@@ -54,7 +54,7 @@ export async function createComplaint(req, res) {
       );
 
     // Keep a JSONL audit trail for operators inspecting the data folder.
-    const logPath = path.join(path.dirname(UPLOADS_DIR), "complaints.jsonl");
+    const logPath = path.join(path.dirname(getUploadsDir()), "complaints.jsonl");
     await fs.appendFile(logPath, `${JSON.stringify(ticket)}\n`);
 
     const complaintEmail = getSetting(

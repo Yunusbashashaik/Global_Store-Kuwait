@@ -1,3 +1,4 @@
+import { persistAdminState } from "../db/persist.js";
 import { getDb } from "../db/connection.js";
 import { DEFAULT_SETTINGS } from "../config/defaults.js";
 
@@ -25,9 +26,21 @@ export function getSetting(key, fallback) {
   }
 }
 
-function setSetting(key, value) {
+export function setSetting(key, value) {
   setRaw(key, value);
   return getSetting(key);
+}
+
+export function countSettings() {
+  return getDb().prepare("SELECT COUNT(*) AS n FROM settings").get().n;
+}
+
+export function replaceAllSettings(settings = {}) {
+  for (const [key, value] of Object.entries(settings || {})) {
+    if (value === undefined) continue;
+    setSetting(key, value);
+  }
+  return getAllSettings();
 }
 
 export function getAllSettings() {
@@ -45,7 +58,7 @@ export function getAllSettings() {
   };
 }
 
-export function updateSettings(patch = {}) {
+export function updateSettings(patch = {}, options = {}) {
   if (typeof patch.complaintEmail === "string") {
     const email = patch.complaintEmail.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -88,6 +101,7 @@ export function updateSettings(patch = {}) {
     setSetting("socialLinks", next);
   }
 
+  if (options.persist !== false) persistAdminState();
   return getAllSettings();
 }
 

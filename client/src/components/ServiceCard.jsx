@@ -1,14 +1,19 @@
+import { useEffect, useState } from "react";
 import ServiceIcon from "./ServiceIcon.jsx";
+import OfferBadge from "./OfferBadge.jsx";
 import { isOutOfStock } from "../data/catalog.js";
+import { isActiveOffer, isExpiredOffer } from "@shared/offers.js";
 
 export default function ServiceCard({ service, lang, t, onViewPlans, revealDelay = 0 }) {
+  const [now, setNow] = useState(() => Date.now());
   const name = lang === "ar" ? service.nameAr : service.nameEn;
   const type =
     lang === "ar"
       ? service.typeAr || "مشترك / خاص"
       : service.typeEn || "Shared / Private";
   const currency = lang === "ar" ? "د.ك" : "KD";
-  const oos = isOutOfStock(service);
+  const offer = isActiveOffer(service, now);
+  const oos = !offer && isOutOfStock(service);
   const startingPrice = oos
     ? 0
     : Math.min(
@@ -16,14 +21,24 @@ export default function ServiceCard({ service, lang, t, onViewPlans, revealDelay
         service.prices.year ?? Infinity,
       );
 
+  useEffect(() => {
+    if (!service.offerExpiresAt) return undefined;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [service.id, service.offerExpiresAt]);
+
+  if (isExpiredOffer(service, now)) return null;
+
   return (
     <article
-      className={`card service-card${oos ? " service-card--oos" : ""}`}
+      className={`card service-card${oos ? " service-card--oos" : ""}${offer ? " service-card--offer" : ""}`}
       id={service.id}
       data-reveal="up"
       style={{ "--reveal-delay": `${revealDelay}ms` }}
     >
-      {oos ? (
+      {offer ? (
+        <OfferBadge service={service} t={t} lang={lang} />
+      ) : oos ? (
         <span className="service-oos-badge">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path
