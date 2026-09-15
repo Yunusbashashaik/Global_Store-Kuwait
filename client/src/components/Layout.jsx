@@ -9,6 +9,7 @@ import {
   setSupportNumbers,
 } from "../data/catalog.js";
 import { cachedPublicServices } from "../lib/adminApi.js";
+import { filterPublicServices } from "@shared/offers.js";
 import { useSettings } from "../context/SettingsContext.jsx";
 import AdminPanel from "./AdminPanel.jsx";
 import ComplaintForm from "./ComplaintForm.jsx";
@@ -113,10 +114,11 @@ export default function Layout({ lang, setLang, t }) {
   }, [cartOpen]);
 
   const featured = useMemo(() => {
-    const byId = new Map(services.map((s) => [s.id, s]));
+    const visible = filterPublicServices(services);
+    const byId = new Map(visible.map((s) => [s.id, s]));
     const picked = FEATURED_SERVICE_IDS.map((id) => byId.get(id)).filter(Boolean);
     if (picked.length >= 3) return picked.slice(0, 3);
-    return services.slice(0, 3);
+    return visible.slice(0, 3);
   }, [services]);
 
   const openFab = useCallback(() => {

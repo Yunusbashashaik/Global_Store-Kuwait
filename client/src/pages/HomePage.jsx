@@ -7,6 +7,7 @@ import { SERVICES, fetchServices } from "../data/catalog.js";
 import { cachedPublicServices } from "../lib/adminApi.js";
 import { wallpaperUrl } from "../data/serviceImages.js";
 import { filterCatalog } from "../lib/filterCatalog.js";
+import { filterPublicServices } from "@shared/offers.js";
 
 export default function HomePage({ lang, t }) {
   const [services, setServices] = useState(
@@ -58,7 +59,7 @@ export default function HomePage({ lang, t }) {
   }, [t.servicesLoadFallback]);
 
   const visibleServices = useMemo(
-    () => filterCatalog(services, query),
+    () => filterCatalog(filterPublicServices(services), query),
     [services, query],
   );
 

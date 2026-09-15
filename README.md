@@ -28,12 +28,13 @@ npm run build
 npm start   # serves built client + API on port 3001
 ```
 
-### Dynamic database (SQLite)
+### Dynamic database
 
-Admin edits and public catalog/settings are stored in **`server/data/globalstore.db`** (not GitHub-tracked static files). Every visitor hitting the Node API sees the same live data.
+Admin catalog, settings, and complaints persist in a **durable data directory outside the app package** (prefer `DATA_DIR` / `DATABASE_PATH`). Typical GoDaddy path: `~/global-store-kuwait-data` or `/local/global-store-kuwait-data` — never `/app/server/data`. Legacy `server/data` is copied once on first boot. Public pages load live data via `GET /api/services` and `GET /api/settings`. Factory services seed **once** into an empty store; later Restart Published App does not overwrite admin names, prices, images, or extra services.
 
 Optional env:
 
+- `DATA_DIR` — durable folder for SQLite/JSON + uploads + `admin-state.json`
 - `DATABASE_PATH` — custom SQLite file path
 - `ADMIN_USERNAME` (default: `admin`)
 - `ADMIN_PASSWORD` (default: `Wz%861?01`)
@@ -68,7 +69,7 @@ This is the real website. Always deploy branch **`main`**. GitHub Pages is only 
 7. Restart the application  
 8. Visit `https://YOUR-DOMAIN/api/health` — you must see JSON `ok: true`
 
-`npm run build` then `npm start` (or Passenger) serves `client/dist` and `/api`. The hardcoded catalog is loaded from Git on every start.
+`npm run build` then `npm start` (or Passenger) serves `client/dist` and `/api`. Admin catalog lives in the durable data directory and survives Restart Published App.
 
 Do **not** FTP only `client/dist` into `public_html`. That is static hosting and `/api/health` will 404.
 
@@ -80,13 +81,11 @@ If the website and API use different URLs, edit `client/public/runtime-config.js
 window.__GLOBALSTORE_CONFIG__ = { apiUrl: "https://your-node-api-url" };
 ```
 
-### Catalog (hardcoded in Git)
+### Catalog
 
-Edit **`shared/defaultServices.js`** and put JPEGs in **`client/public/service-images/{id}.jpg`**. Commit and deploy. That catalog ships with the code, so it **does not vanish** on GoDaddy the way Admin-only database rows did.
+Public services come from the **live API/database**. `shared/defaultServices.js` (plus JPEGs in `client/public/service-images/`) is used **only** to seed an empty durable store the first time. Admin Add/Edit is the source of truth after that. Confirm `/api/health` has `dataDirInsideApp: false` and `catalogSeededThisBoot: false` on later restarts.
 
-The storefront catalog is the 42 services in that file. JSON dumps under `godaddy-sync/` and `server/data/` are not imported as services.
-
-Admin can still change complaint email / WhatsApp / About Us. Do not use Admin to add the public catalog if you want it to survive every publish.
+Optional Eid / Special offers with an expiry datetime hide that one service from the public catalog when time is up; Admin can still see it.
 
 ### Complaint email
 

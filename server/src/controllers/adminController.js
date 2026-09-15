@@ -46,6 +46,17 @@ function parseBodyPrices(body) {
   return prices;
 }
 
+function parseOfferFields(body, { required = false } = {}) {
+  const hasType = body.offerType !== undefined || body.offer_type !== undefined;
+  const hasExpiry =
+    body.offerExpiresAt !== undefined || body.offer_expires_at !== undefined;
+  if (!required && !hasType && !hasExpiry) return {};
+  return {
+    offerType: body.offerType ?? body.offer_type ?? "none",
+    offerExpiresAt: body.offerExpiresAt ?? body.offer_expires_at ?? null,
+  };
+}
+
 function parseOutOfStock(body) {
   if (body.outOfStock === undefined && body.out_of_stock === undefined) {
     return undefined;
@@ -117,6 +128,7 @@ export function createAdminService(req, res) {
       accent: body.accent || "#38bdf8",
       typeEn: body.typeEn || "Shared / Private",
       typeAr: body.typeAr || "مشترك / خاص",
+      ...parseOfferFields(body, { required: true }),
     });
 
     snapshotAdminChange({
@@ -147,6 +159,7 @@ export function updateAdminService(req, res) {
       typeAr: body.typeAr,
       prices: parseBodyPrices(body),
       outOfStock: parseOutOfStock(body),
+      ...parseOfferFields(body),
     };
 
     if (req.file) {

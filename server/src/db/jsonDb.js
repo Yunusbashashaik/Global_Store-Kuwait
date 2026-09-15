@@ -36,7 +36,26 @@ export class JsonDatabase {
 
   save() {
     fs.mkdirSync(path.dirname(this.filePath), { recursive: true });
-    fs.writeFileSync(this.filePath, `${JSON.stringify(this.data, null, 2)}\n`);
+    const payload = `${JSON.stringify(this.data, null, 2)}\n`;
+    const tmp = `${this.filePath}.${process.pid}.tmp`;
+    const fd = fs.openSync(tmp, "w");
+    try {
+      fs.writeSync(fd, payload);
+      fs.fsyncSync(fd);
+    } finally {
+      fs.closeSync(fd);
+    }
+    fs.renameSync(tmp, this.filePath);
+    try {
+      const dirFd = fs.openSync(path.dirname(this.filePath), "r");
+      try {
+        fs.fsyncSync(dirFd);
+      } finally {
+        fs.closeSync(dirFd);
+      }
+    } catch {
+      /* some hosts cannot fsync directories */
+    }
   }
 
   pragma() {
@@ -77,6 +96,12 @@ export class JsonDatabase {
         return String(a.name_en || "").localeCompare(String(b.name_en || ""));
       });
       return mode === "get" ? rows[0] : rows;
+    }
+
+    if (sql.startsWith("select image_data from services")) {
+      const id = namedOrPositional(params, "id", 0);
+      const row = this.data.services.find((s) => s.id === id);
+      return row ? { image_data: row.image_data } : undefined;
     }
 
     if (sql.startsWith("select * from services where id")) {
@@ -122,6 +147,8 @@ export class JsonDatabase {
         image_url: p.imageUrl,
         image_data: p.imageData || null,
         out_of_stock: p.outOfStock,
+        offer_type: p.offerType || "none",
+        offer_expires_at: p.offerExpiresAt || null,
         sort_order: p.sortOrder,
         created_at: nowIso(),
         updated_at: nowIso(),
@@ -150,10 +177,20 @@ export class JsonDatabase {
         price_month: p.priceMonth,
         price_year: p.priceYear,
         out_of_stock: p.outOfStock,
+        offer_type: p.offerType ?? current.offer_type ?? "none",
+        offer_expires_at:
+          p.offerExpiresAt === undefined ? current.offer_expires_at || null : p.offerExpiresAt,
         updated_at: nowIso(),
       };
       this.save();
       return { changes: 1 };
+    }
+
+    if (sql === "delete from services") {
+      const before = this.data.services.length;
+      this.data.services = [];
+      this.save();
+      return { changes: before };
     }
 
     if (sql.startsWith("delete from services")) {

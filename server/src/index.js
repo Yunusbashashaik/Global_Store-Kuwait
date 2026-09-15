@@ -2,20 +2,14 @@ import cors from "cors";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import {
-  getActiveDbPath,
-  getActiveJsonPath,
-  getDataDir,
-  getDbEngine,
-  initDatabase,
-} from "./db/connection.js";
+import { getHealthPayload } from "./health.js";
+import { getDataDir, initDatabase } from "./db/connection.js";
 import { mountUploadStatic } from "./middleware/staticUploads.js";
 import { seedDatabase } from "./db/seed.js";
 import { adminRouter } from "./routes/admin.js";
 import { complaintRouter } from "./routes/complaints.js";
 import { servicesRouter } from "./routes/services.js";
 import { settingsRouter } from "./routes/settings.js";
-import { listServices } from "./models/Service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3001;
@@ -24,7 +18,7 @@ const HOST = process.env.HOST || "0.0.0.0";
 initDatabase();
 seedDatabase();
 console.log(
-  `[globalstore] catalog data dir=${getDataDir()} db=${getActiveDbPath()} json=${getActiveJsonPath()} engine=${getDbEngine()}`,
+  `[globalstore] catalog data dir=${getDataDir()} store=${getHealthPayload().storePath} engine=${getHealthPayload().db}`,
 );
 
 const app = express();
@@ -34,17 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/api/health", (_req, res) => {
-  res.json({
-    ok: true,
-    service: "global-store-api",
-    db: getDbEngine(),
-    services: listServices().length,
-    dataDir: getDataDir(),
-    dbFile: getActiveDbPath(),
-    jsonFile: getActiveJsonPath(),
-    cwd: process.cwd(),
-    time: new Date().toISOString(),
-  });
+  res.json(getHealthPayload());
 });
 
 mountUploadStatic(app);
@@ -99,3 +83,4 @@ if (isDirectRun) {
 }
 
 export { app };
+export default app;

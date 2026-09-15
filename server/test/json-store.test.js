@@ -17,7 +17,7 @@ describe("JSON file database fallback", () => {
       engine: "json",
       jsonPath: path.join(testDir, "store.json"),
     });
-    seedDatabase([]);
+    seedDatabase();
   });
 
   after(() => {
@@ -25,9 +25,9 @@ describe("JSON file database fallback", () => {
     fs.rmSync(testDir, { recursive: true, force: true });
   });
 
-  it("starts with an empty catalog on the JSON engine", () => {
+  it("starts with the default catalog on the JSON engine", () => {
     assert.equal(getDbEngine(), "json");
-    assert.equal(listServices().length, 0);
+    assert.ok(listServices().length > 0);
     assert.ok(getAllSettings().complaintEmail);
   });
 
@@ -41,7 +41,7 @@ describe("JSON file database fallback", () => {
       prices: { month: 2, year: 9 },
     });
     assert.equal(created.nameEn, "JSON Service");
-    assert.equal(listServices()[0].id, "json-test-service");
+    assert.ok(listServices().some((s) => s.id === "json-test-service"));
 
     const settings = updateSettings({ complaintEmail: "json@example.com" });
     assert.equal(settings.complaintEmail, "json@example.com");
