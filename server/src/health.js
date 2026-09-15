@@ -1,5 +1,6 @@
 import {
   APP_ROOT,
+  getActiveJsonPath,
   getActiveStorePath,
   getDataDir,
   getDbEngine,
@@ -23,7 +24,7 @@ export function getHealthPayload() {
     storePath,
     databasePath: storePath,
     dbFile: storePath,
-    jsonFile: storePath,
+    jsonFile: getActiveJsonPath(),
     services: countServices(),
     complaintEmail: getAllSettings().complaintEmail,
     catalogSeededThisBoot: Boolean(seed.catalogSeededThisBoot),
