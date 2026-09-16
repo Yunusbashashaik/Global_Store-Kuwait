@@ -1,8 +1,7 @@
 /**
- * Hardcoded store catalog. Edit this file, commit, and deploy.
- * Startup replaces the live database with these rows, so they do not vanish
- * on GoDaddy. Future updates: change this file (and optional JPEGs under
- * client/public/service-images/{id}.jpg) then publish again.
+ * Factory catalog for true first boot only (empty store, no snapshot anywhere,
+ * catalog never seeded). Startup must never replace an admin catalog with these
+ * rows. Optional JPEGs live under client/public/service-images/{id}.jpg.
  */
 export const DEFAULT_SERVICES = [
   {
