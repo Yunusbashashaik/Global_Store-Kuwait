@@ -49,6 +49,9 @@ function serviceSignature(service) {
     String(service.nameAr || ""),
     String(service.descriptionEn || ""),
     String(service.descriptionAr || ""),
+    String(service.offerType || "none"),
+    String(service.offerExpiresAt || ""),
+    String(service.imageUrl || ""),
     outOfStock,
   ].join("|");
 }
@@ -150,6 +153,20 @@ export function factorySeedWouldClobber(existingProbe, incomingServices) {
   const incomingIsDefault =
     !incomingServices?.length || catalogMatchesDefaults(incomingServices);
   return Boolean(existingProbe.customCatalog && incomingIsDefault);
+}
+
+/** Never replace a populated backup with empty or factory rows. */
+export function snapshotWriteWouldDestroy(existingProbe, incomingServices) {
+  if (!existingProbe?.readable) return false;
+  const incoming = Array.isArray(incomingServices) ? incomingServices : [];
+  if ((existingProbe.services || 0) > 0 && incoming.length === 0) return true;
+  return factorySeedWouldClobber(existingProbe, incoming);
+}
+
+export function snapshotShowsPriorCatalog(probe) {
+  if (!probe?.readable || !probe.parsed) return false;
+  if (probe.customCatalog || probe.services > 0) return true;
+  return probe.parsed?.settings?.catalogSeeded === true;
 }
 
 function copyFileOverwrite(from, to) {

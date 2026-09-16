@@ -12,11 +12,12 @@ import {
   catalogMatchesDefaults,
   catalogSignature,
   copyCatalogDir,
-  factorySeedWouldClobber,
   pickBestSnapshotProbe,
   probeSnapshotPaths,
   settingsMatchDefaults,
   settingsSignature,
+  snapshotShowsPriorCatalog,
+  snapshotWriteWouldDestroy,
 } from "./adminSnapshot.js";
 
 export {
@@ -102,9 +103,9 @@ export function writeAdminSnapshot(state) {
   const outcomes = [];
   for (const filePath of getSnapshotWritePaths()) {
     const existing = probeSnapshotPaths([filePath])[0];
-    if (factorySeedWouldClobber(existing, payload.services)) {
+    if (snapshotWriteWouldDestroy(existing, payload.services)) {
       skipped += 1;
-      outcomes.push({ path: filePath, wrote: false, reason: "keep-custom" });
+      outcomes.push({ path: filePath, wrote: false, reason: "keep-existing-catalog" });
       continue;
     }
     try {
@@ -136,7 +137,7 @@ export function replicateActiveStore() {
   for (const destDir of destDirs) {
     if (path.resolve(destDir) === fromDir) continue;
     const existing = probeSnapshotPaths([path.join(destDir, SNAPSHOT_NAME)])[0];
-    if (factorySeedWouldClobber(existing, liveServices)) continue;
+    if (snapshotWriteWouldDestroy(existing, liveServices)) continue;
     try {
       const result = copyCatalogDir(fromDir, destDir, { overwriteStore: true });
       if (result.copied) copied += 1;
@@ -155,9 +156,16 @@ export function persistAdminState() {
     }
     flushActiveStore();
     replicateActiveStore();
+    const settings =
+      source.getAllSettings && typeof source.getAllSettings === "function"
+        ? { ...source.getAllSettings() }
+        : {};
+    if (typeof source.getSetting === "function") {
+      settings.catalogSeeded = source.getSetting("catalogSeeded") === true;
+    }
     return writeAdminSnapshot({
       services: source.listServices(),
-      settings: source.getAllSettings(),
+      settings,
     });
   } catch (err) {
     console.error("Failed to persist admin state", err?.message || err);
@@ -179,6 +187,27 @@ export function readAdminSnapshot() {
 
 export function findCustomAdminSnapshot() {
   return inspectSnapshots().find((probe) => probe.readable && probe.customCatalog) || null;
+}
+
+export function findPriorCatalogEvidence() {
+  const probes = inspectSnapshots();
+  const priorSnapshots = probes.filter(snapshotShowsPriorCatalog);
+  const custom = priorSnapshots.find((probe) => probe.customCatalog) || null;
+  return {
+    detected: priorSnapshots.length > 0,
+    customCatalog: Boolean(custom),
+    customSnapshotPath: custom?.path || null,
+    snapshotWithServices: priorSnapshots.find((probe) => probe.services > 0) || null,
+    seededInSnapshot: priorSnapshots.some(
+      (probe) => probe.parsed?.settings?.catalogSeeded === true,
+    ),
+    probes: priorSnapshots.map((probe) => ({
+      path: probe.path,
+      services: probe.services,
+      customCatalog: Boolean(probe.customCatalog),
+      catalogSeeded: probe.parsed?.settings?.catalogSeeded === true,
+    })),
+  };
 }
 
 export function hydratePersistedAdminState() {
@@ -252,7 +281,9 @@ export function hydratePersistedAdminState() {
     console.log(
       `Restored admin data from snapshot ${snapshotProbe.path} (services=${restoredServices}, settings=${restoredSettings}).`,
     );
-    persistAdminState();
+    if (source.listServices().length > 0) {
+      persistAdminState();
+    }
   } else if (!snapshotDiffersFromLive(snapshotProbe)) {
     reason = "already-current";
   }

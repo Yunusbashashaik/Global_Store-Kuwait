@@ -3,6 +3,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getActiveJsonPath } from "./connection.js";
 
+/** Unused at boot. Must not overwrite the live catalog; use persist.js replicas. */
+
 const REPO_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
 function getGodaddySyncDir() {
