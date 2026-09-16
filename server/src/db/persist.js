@@ -4,15 +4,33 @@ import {
   flushActiveStore,
   getActiveStorePath,
   getDataDir,
-  LEGACY_APP_DATA_DIR,
+  getReplicaDataDirs,
+  getSnapshotSearchDirs,
 } from "./connection.js";
-import { DEFAULT_SERVICES } from "../config/defaultServices.js";
-import { DEFAULT_SETTINGS } from "../config/defaults.js";
+import {
+  SNAPSHOT_NAME,
+  catalogMatchesDefaults,
+  catalogSignature,
+  copyCatalogDir,
+  factorySeedWouldClobber,
+  pickBestSnapshotProbe,
+  probeSnapshotPaths,
+  settingsMatchDefaults,
+  settingsSignature,
+} from "./adminSnapshot.js";
 
-const SNAPSHOT_NAME = "admin-state.json";
+export {
+  SNAPSHOT_NAME,
+  catalogMatchesDefaults,
+  catalogSignature,
+  settingsMatchDefaults,
+} from "./adminSnapshot.js";
 
 let source = null;
 let persistDisabled = 0;
+let lastHydrateResult = { restored: false, reason: "not-run" };
+let lastSnapshotProbes = [];
+let lastWriteResult = { wrote: 0, skipped: 0, paths: [] };
 
 export function bindPersist(nextSource) {
   source = nextSource;
@@ -33,13 +51,17 @@ export function getSnapshotWritePaths() {
   if (storePath) dirs.add(path.dirname(path.resolve(storePath)));
   dirs.add(path.resolve(getDataDir()));
   if (process.env.DATA_DIR) dirs.add(path.resolve(process.env.DATA_DIR));
+  for (const dir of getReplicaDataDirs()) {
+    dirs.add(path.resolve(dir));
+  }
   return [...dirs].map((dir) => path.join(dir, SNAPSHOT_NAME));
 }
 
 export function getSnapshotPaths() {
   const paths = new Set(getSnapshotWritePaths());
-  paths.add(path.join(path.resolve(LEGACY_APP_DATA_DIR), SNAPSHOT_NAME));
-  paths.add(path.join(path.resolve(getDataDir()), SNAPSHOT_NAME));
+  for (const dir of getSnapshotSearchDirs()) {
+    paths.add(path.join(path.resolve(dir), SNAPSHOT_NAME));
+  }
   return [...paths];
 }
 
@@ -76,19 +98,53 @@ export function writeAdminSnapshot(state) {
   };
   const body = `${JSON.stringify(payload, null, 2)}\n`;
   let wrote = 0;
+  let skipped = 0;
+  const outcomes = [];
   for (const filePath of getSnapshotWritePaths()) {
+    const existing = probeSnapshotPaths([filePath])[0];
+    if (factorySeedWouldClobber(existing, payload.services)) {
+      skipped += 1;
+      outcomes.push({ path: filePath, wrote: false, reason: "keep-custom" });
+      continue;
+    }
     try {
       atomicWrite(filePath, body);
       wrote += 1;
+      outcomes.push({ path: filePath, wrote: true, reason: "ok" });
     } catch (err) {
       console.error("Failed to write admin snapshot", filePath, err?.message || err);
+      outcomes.push({
+        path: filePath,
+        wrote: false,
+        reason: err?.message || "write-failed",
+      });
     }
   }
+  lastWriteResult = { wrote, skipped, paths: outcomes };
   if (!wrote) {
     console.error("Admin snapshot was not written to any durable path");
     return null;
   }
   return payload;
+}
+
+export function replicateActiveStore() {
+  const fromDir = path.resolve(getDataDir());
+  const liveServices = source && typeof source.listServices === "function" ? source.listServices() : [];
+  const destDirs = new Set(getSnapshotWritePaths().map((filePath) => path.dirname(filePath)));
+  let copied = 0;
+  for (const destDir of destDirs) {
+    if (path.resolve(destDir) === fromDir) continue;
+    const existing = probeSnapshotPaths([path.join(destDir, SNAPSHOT_NAME)])[0];
+    if (factorySeedWouldClobber(existing, liveServices)) continue;
+    try {
+      const result = copyCatalogDir(fromDir, destDir, { overwriteStore: true });
+      if (result.copied) copied += 1;
+    } catch (err) {
+      console.error("Failed to replicate catalog store", destDir, err?.message || err);
+    }
+  }
+  return copied;
 }
 
 export function persistAdminState() {
@@ -98,6 +154,7 @@ export function persistAdminState() {
       source.persistImages();
     }
     flushActiveStore();
+    replicateActiveStore();
     return writeAdminSnapshot({
       services: source.listServices(),
       settings: source.getAllSettings(),
@@ -110,76 +167,46 @@ export function persistAdminState() {
 
 export const persistLiveCatalog = persistAdminState;
 
+export function inspectSnapshots() {
+  lastSnapshotProbes = probeSnapshotPaths(getSnapshotPaths());
+  return lastSnapshotProbes;
+}
+
 export function readAdminSnapshot() {
-  let best = null;
-  for (const filePath of getSnapshotPaths()) {
-    try {
-      const parsed = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      if (!parsed || typeof parsed !== "object") continue;
-      if (!best || Date.parse(parsed.savedAt || 0) >= Date.parse(best.savedAt || 0)) {
-        best = parsed;
-      }
-    } catch {
-      /* missing or unreadable */
-    }
-  }
-  return best;
+  const best = pickBestSnapshotProbe(inspectSnapshots());
+  return best?.parsed || null;
 }
 
-function settingsSignature(settings) {
-  const value = settings || {};
-  return JSON.stringify({
-    complaintEmail: value.complaintEmail,
-    whatsappNumbers: value.whatsappNumbers,
-    aboutEn: value.aboutEn,
-    aboutAr: value.aboutAr,
-    ownersEn: value.ownersEn,
-    ownersAr: value.ownersAr,
-    socialLinks: value.socialLinks,
-  });
-}
-
-export function settingsMatchDefaults(settings) {
-  return settingsSignature(settings) === settingsSignature(DEFAULT_SETTINGS);
-}
-
-function serviceSignature(service) {
-  const month = Number(service.prices?.month);
-  const year = Number(service.prices?.year);
-  const outOfStock =
-    service.outOfStock ||
-    (Number.isFinite(month) && month === 0) ||
-    (Number.isFinite(year) && year === 0)
-      ? 1
-      : 0;
-  return [
-    service.id,
-    outOfStock ? 0 : month,
-    outOfStock ? 0 : year,
-    String(service.nameEn || ""),
-    String(service.nameAr || ""),
-    String(service.descriptionEn || ""),
-    String(service.descriptionAr || ""),
-    outOfStock,
-  ].join("|");
-}
-
-function catalogSignature(services) {
-  return (services || [])
-    .map(serviceSignature)
-    .sort()
-    .join("\n");
-}
-
-export function catalogMatchesDefaults(services) {
-  return catalogSignature(services) === catalogSignature(DEFAULT_SERVICES);
+export function findCustomAdminSnapshot() {
+  return inspectSnapshots().find((probe) => probe.readable && probe.customCatalog) || null;
 }
 
 export function hydratePersistedAdminState() {
-  if (!source) return { restored: false, reason: "unbound" };
-  const snapshot = readAdminSnapshot();
-  if (!snapshot) return { restored: false, reason: "no-snapshot" };
+  if (!source) {
+    lastHydrateResult = { restored: false, reason: "unbound" };
+    return lastHydrateResult;
+  }
+  const probes = inspectSnapshots();
+  const snapshotProbe = pickBestSnapshotProbe(probes);
+  if (!snapshotProbe) {
+    lastHydrateResult = {
+      restored: false,
+      reason: "no-snapshot",
+      snapshotPath: null,
+      probes: probes.map((probe) => ({
+        path: probe.path,
+        readable: probe.readable,
+        reason: probe.reason,
+        savedAt: probe.savedAt || null,
+        services: probe.services || 0,
+        matchesDefaults: Boolean(probe.matchesDefaults),
+        customCatalog: Boolean(probe.customCatalog),
+      })),
+    };
+    return lastHydrateResult;
+  }
 
+  const snapshot = snapshotProbe.parsed;
   const currentSettings = source.getAllSettings();
   const snapSettings =
     snapshot.settings && typeof snapshot.settings === "object" ? snapshot.settings : null;
@@ -187,6 +214,7 @@ export function hydratePersistedAdminState() {
 
   let restoredServices = false;
   let restoredSettings = false;
+  let reason = "snapshot-not-applied";
 
   withoutPersist(() => {
     const currentServices = source.listServices();
@@ -194,8 +222,10 @@ export function hydratePersistedAdminState() {
     const currentIsDefault = catalogMatchesDefaults(currentServices);
     const snapshotDiffers =
       catalogSignature(currentServices) !== catalogSignature(snapServices);
+    const snapshotIsCustom = snapshotHasCustom(snapshotProbe);
     const snapshotCanReplaceDefaults =
-      snapServices.length >= currentServices.length && snapServices.length > 0;
+      snapServices.length > 0 &&
+      (snapshotIsCustom || snapServices.length >= currentServices.length);
     if (
       snapServices.length > 0 &&
       (emptyCatalog ||
@@ -218,25 +248,62 @@ export function hydratePersistedAdminState() {
   });
 
   if (restoredServices || restoredSettings) {
+    reason = restoredServices ? "restored-catalog" : "restored-settings";
     console.log(
-      `Restored admin data from snapshot (services=${restoredServices}, settings=${restoredSettings}).`,
+      `Restored admin data from snapshot ${snapshotProbe.path} (services=${restoredServices}, settings=${restoredSettings}).`,
     );
     persistAdminState();
+  } else if (!snapshotDiffersFromLive(snapshotProbe)) {
+    reason = "already-current";
   }
 
-  return {
+  lastHydrateResult = {
     restored: restoredServices || restoredSettings,
     restoredServices,
     restoredSettings,
     savedAt: snapshot.savedAt || null,
+    reason,
+    snapshotPath: snapshotProbe.path,
+    customCatalog: Boolean(snapshotProbe.customCatalog),
+    matchesDefaults: Boolean(snapshotProbe.matchesDefaults),
   };
+  return lastHydrateResult;
+}
+
+function snapshotHasCustom(probe) {
+  return Boolean(probe?.customCatalog || probe?.customSettings);
+}
+
+function snapshotDiffersFromLive(probe) {
+  if (!source || !probe?.parsed) return true;
+  return catalogSignature(source.listServices()) !== catalogSignature(probe.parsed.services);
+}
+
+export function getLastHydrateResult() {
+  return lastHydrateResult;
+}
+
+export function getLastSnapshotWriteResult() {
+  return lastWriteResult;
 }
 
 export function getPersistStatus() {
-  const snapshot = readAdminSnapshot();
+  const probes = inspectSnapshots();
+  const snapshot = pickBestSnapshotProbe(probes);
   return {
     snapshotSavedAt: snapshot?.savedAt || null,
-    snapshotServices: Array.isArray(snapshot?.services) ? snapshot.services.length : 0,
-    snapshotPaths: getSnapshotPaths(),
+    snapshotServices: snapshot?.services || 0,
+    snapshotPaths: probes.map((probe) => probe.path),
+    snapshotProbes: probes.map((probe) => ({
+      path: probe.path,
+      readable: probe.readable,
+      reason: probe.reason,
+      savedAt: probe.savedAt || null,
+      services: probe.services || 0,
+      matchesDefaults: Boolean(probe.matchesDefaults),
+      customCatalog: Boolean(probe.customCatalog),
+    })),
+    snapshotWrite: lastWriteResult,
+    hydrate: lastHydrateResult,
   };
 }

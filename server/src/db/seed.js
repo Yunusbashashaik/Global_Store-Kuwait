@@ -1,6 +1,7 @@
 import { DEFAULT_SERVICES } from "../config/defaultServices.js";
 import {
   bindPersist,
+  findCustomAdminSnapshot,
   hydratePersistedAdminState,
   persistAdminState,
   withoutPersist,
@@ -61,6 +62,14 @@ function seedDefaultCatalogIfEmpty() {
   }
 
   if (getSetting("catalogSeeded") === true) {
+    return false;
+  }
+
+  const customSnapshot = findCustomAdminSnapshot();
+  if (customSnapshot) {
+    console.error(
+      `Refusing to seed factory catalog; custom snapshot still exists at ${customSnapshot.path}`,
+    );
     return false;
   }
 

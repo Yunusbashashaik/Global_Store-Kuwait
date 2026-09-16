@@ -3,6 +3,15 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  SNAPSHOT_NAME,
+  compareSnapshotScores,
+  copyCatalogDir,
+  pickBestSnapshotProbe,
+  probeSnapshotPaths,
+  readSnapshotFile,
+  scoreSnapshotProbe,
+} from "./adminSnapshot.js";
 import { JsonDatabase } from "./jsonDb.js";
 
 const require = createRequire(import.meta.url);
@@ -73,6 +82,9 @@ let dbEngine = "none";
 let activeDbPath;
 let activeJsonPath;
 let lastMigration = { migrated: false, reason: "not-run" };
+let lastCatalogRecovery = { recovered: false, reason: "not-run" };
+let replicaDataDirs = [];
+let searchHostSnapshotDirs = false;
 
 function setDataDir(dir) {
   DATA_DIR = dir;
@@ -132,6 +144,32 @@ export function getUploadsDir() {
 
 export function getLastMigration() {
   return lastMigration;
+}
+
+export function getLastCatalogRecovery() {
+  return lastCatalogRecovery;
+}
+
+export function getReplicaDataDirs() {
+  return replicaDataDirs.slice();
+}
+
+export function setReplicaDataDirs(dirs) {
+  replicaDataDirs = [
+    ...new Set((dirs || []).map((dir) => path.resolve(dir)).filter(Boolean)),
+  ];
+}
+
+export function getSnapshotSearchDirs() {
+  const dirs = new Set();
+  dirs.add(path.resolve(getDataDir()));
+  if (process.env.DATA_DIR) dirs.add(path.resolve(process.env.DATA_DIR));
+  for (const dir of replicaDataDirs) dirs.add(path.resolve(dir));
+  if (searchHostSnapshotDirs) {
+    for (const dir of durableDataDirCandidates()) dirs.add(path.resolve(dir));
+    dirs.add(path.resolve(LEGACY_DATA_DIR));
+  }
+  return [...dirs];
 }
 
 export function isInsideAppTree(dir, appRoot = APP_ROOT) {
@@ -205,8 +243,91 @@ export function getServiceUploadsDir() {
   return SERVICE_UPLOADS_DIR;
 }
 
-/** Keep live catalog outside the git/app folder so deploys cannot wipe admin edits. */
-export function resolveProductionDataDir(options = {}) {
+function summarizeSnapshotProbes(probes) {
+  return (probes || []).map((probe) => ({
+    path: probe.path,
+    readable: probe.readable,
+    reason: probe.reason,
+    savedAt: probe.savedAt || null,
+    services: probe.services || 0,
+    matchesDefaults: Boolean(probe.matchesDefaults),
+    customCatalog: Boolean(probe.customCatalog),
+  }));
+}
+
+export function recoverBestCatalogInto(destDir, searchDirs = []) {
+  const dest = path.resolve(destDir);
+  fs.mkdirSync(dest, { recursive: true });
+  const dirs = [...new Set((searchDirs || []).map((dir) => path.resolve(dir)))];
+  if (!dirs.includes(dest)) dirs.unshift(dest);
+  const probes = probeSnapshotPaths(dirs.map((dir) => path.join(dir, SNAPSHOT_NAME)));
+  const best = pickBestSnapshotProbe(probes);
+  if (!best) {
+    lastCatalogRecovery = {
+      recovered: false,
+      reason: "no-snapshot",
+      dest,
+      from: null,
+      probes: summarizeSnapshotProbes(probes),
+    };
+    return lastCatalogRecovery;
+  }
+
+  const fromDir = path.dirname(best.path);
+  const destProbe =
+    probes.find((probe) => path.resolve(path.dirname(probe.path)) === dest) ||
+    readSnapshotFile(path.join(dest, SNAPSHOT_NAME));
+  const destScore = scoreSnapshotProbe(destProbe);
+  const bestScore = scoreSnapshotProbe(best);
+  const destIsBetterOrEqual = destProbe?.readable
+    ? compareSnapshotScores(bestScore, destScore) >= 0
+    : false;
+
+  if (path.resolve(fromDir) === dest) {
+    lastCatalogRecovery = {
+      recovered: false,
+      reason: "already-active",
+      dest,
+      from: fromDir,
+      snapshotPath: best.path,
+      customCatalog: Boolean(best.customCatalog),
+      probes: summarizeSnapshotProbes(probes),
+    };
+    return lastCatalogRecovery;
+  }
+
+  if (destIsBetterOrEqual) {
+    lastCatalogRecovery = {
+      recovered: false,
+      reason: "active-is-better",
+      dest,
+      from: fromDir,
+      snapshotPath: best.path,
+      customCatalog: Boolean(best.customCatalog),
+      probes: summarizeSnapshotProbes(probes),
+    };
+    return lastCatalogRecovery;
+  }
+
+  const copied = copyCatalogDir(fromDir, dest, { overwriteStore: true });
+  lastCatalogRecovery = {
+    recovered: Boolean(copied.copied),
+    reason: copied.copied ? "copied-best-catalog" : copied.reason,
+    dest,
+    from: fromDir,
+    snapshotPath: best.path,
+    customCatalog: Boolean(best.customCatalog),
+    probes: summarizeSnapshotProbes(probes),
+  };
+  if (copied.copied) {
+    console.log(
+      `Recovered admin catalog from ${fromDir} into ${dest} (custom=${Boolean(best.customCatalog)}).`,
+    );
+  }
+  return lastCatalogRecovery;
+}
+
+function preferredEnvDataDir(options = {}) {
   if (options.dataDir) return path.resolve(options.dataDir);
   if (process.env.DATA_DIR) return path.resolve(process.env.DATA_DIR);
   if (options.dbPath) return path.dirname(path.resolve(options.dbPath));
@@ -217,7 +338,22 @@ export function resolveProductionDataDir(options = {}) {
   if (process.env.JSON_DATABASE_PATH) {
     return path.dirname(path.resolve(process.env.JSON_DATABASE_PATH));
   }
+  return null;
+}
+
+/** Keep live catalog outside the git/app folder so deploys cannot wipe admin edits. */
+export function resolveProductionDataDir(options = {}) {
+  const envDir = preferredEnvDataDir(options);
   const candidates = durableDataDirCandidates();
+  const searchDirs = [...new Set([envDir, ...candidates, LEGACY_DATA_DIR].filter(Boolean))];
+  const best = pickBestSnapshotProbe(
+    probeSnapshotPaths(searchDirs.map((dir) => path.join(dir, SNAPSHOT_NAME))),
+  );
+  const bestDir = best ? path.dirname(best.path) : null;
+
+  if (envDir && canWriteDir(envDir)) return envDir;
+  if (bestDir && canWriteDir(bestDir) && !isInsideAppTree(bestDir)) return bestDir;
+
   for (const dir of candidates) {
     if (storeArtifactsPresent(dir) && canWriteDir(dir)) return dir;
   }
@@ -332,13 +468,23 @@ export function flushActiveStore() {
 export function initDatabase(dbPath, options = {}) {
   const explicitStore = Boolean(dbPath || options.jsonPath || options.dataDir);
   if (explicitStore) {
+    searchHostSnapshotDirs = false;
     setDataDir(
       path.dirname(path.resolve(options.jsonPath || dbPath || options.dataDir)),
     );
     if (options.dataDir) setDataDir(path.resolve(options.dataDir));
+    setReplicaDataDirs(options.replicaDirs || []);
     lastMigration = { migrated: false, reason: "explicit-store" };
+    lastCatalogRecovery = { recovered: false, reason: "explicit-store" };
+    if (replicaDataDirs.length) {
+      recoverBestCatalogInto(DATA_DIR, [DATA_DIR, ...replicaDataDirs]);
+    }
   } else {
+    searchHostSnapshotDirs = true;
     setDataDir(resolveProductionDataDir(options));
+    const writableReplicas = durableDataDirCandidates().filter((dir) => canWriteDir(dir));
+    setReplicaDataDirs(writableReplicas);
+    recoverBestCatalogInto(DATA_DIR, getSnapshotSearchDirs());
     migrateLegacyDataDir(LEGACY_DATA_DIR, DATA_DIR);
   }
 

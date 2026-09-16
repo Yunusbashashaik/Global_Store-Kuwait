@@ -7,6 +7,7 @@ import {
   closeDatabase,
   getDataDir,
   getDbEngine,
+  getLastCatalogRecovery,
   getServiceUploadsDir,
   initDatabase,
   isInsideAppTree,
@@ -22,6 +23,7 @@ import {
 } from "../src/models/Service.js";
 import { DEFAULT_SERVICES } from "../../shared/defaultServices.js";
 import { getAllSettings, getSetting, updateSettings } from "../src/models/Settings.js";
+import { catalogMatchesDefaults, writeAdminSnapshot } from "../src/db/persist.js";
 
 describe("admin catalog persistence", () => {
   const dirs = [];
@@ -219,5 +221,118 @@ describe("admin catalog persistence", () => {
     assert.equal(publicList.some((s) => s.id === "eid-offer-row"), false);
     assert.ok(publicList.some((s) => s.id === "special-offer-row"));
     assert.ok(publicList.some((s) => s.id === "netflix-prime-combo"));
+  });
+
+  it("restores a custom snapshot from an alternate durable path without factory seeding", () => {
+    const active = fs.mkdtempSync(path.join(os.tmpdir(), "gs-active-"));
+    const replica = fs.mkdtempSync(path.join(os.tmpdir(), "gs-replica-"));
+    dirs.push(active, replica);
+    fs.writeFileSync(
+      path.join(replica, "admin-state.json"),
+      `${JSON.stringify(
+        {
+          version: 1,
+          savedAt: "2026-01-01T00:00:00.000Z",
+          services: [
+            {
+              id: "youtube-premium-personal",
+              nameEn: "YouTube Kuwait Live",
+              nameAr: "يوتيوب كويت",
+              descriptionEn: "custom",
+              descriptionAr: "مخصص",
+              prices: { month: 4, year: 30 },
+            },
+          ],
+          settings: { catalogSeeded: true, complaintEmail: "live@example.com" },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+
+    initDatabase(path.join(active, "unused.db"), {
+      engine: "json",
+      jsonPath: path.join(active, "globalstore.json"),
+      replicaDirs: [replica],
+    });
+    const seeded = seedDatabase();
+    assert.equal(seeded.catalogSeededThisBoot, false);
+    assert.equal(getLastSeedResult().catalogSeededThisBoot, false);
+    assert.equal(seeded.hydrated.restored, true);
+    const youtube = listServices().find((s) => s.id === "youtube-premium-personal");
+    assert.equal(youtube.nameEn, "YouTube Kuwait Live");
+    assert.equal(getAllSettings().complaintEmail, "live@example.com");
+    assert.equal(catalogMatchesDefaults(listServices()), false);
+
+    const health = getHealthPayload();
+    assert.equal(health.catalogSeededThisBoot, false);
+    assert.equal(health.catalogMatchesDefaults, false);
+    assert.ok(Array.isArray(health.snapshotPaths));
+    assert.ok(health.snapshotPaths.some((file) => file.includes(replica)));
+    assert.ok(health.hydrateReason);
+    assert.equal(getLastCatalogRecovery().from, replica);
+  });
+
+  it("does not clobber a custom snapshot with a factory-seeded catalog", () => {
+    const active = fs.mkdtempSync(path.join(os.tmpdir(), "gs-clobber-a-"));
+    const replica = fs.mkdtempSync(path.join(os.tmpdir(), "gs-clobber-b-"));
+    dirs.push(active, replica);
+    initDatabase(path.join(active, "unused.db"), {
+      engine: "json",
+      jsonPath: path.join(active, "globalstore.json"),
+      replicaDirs: [replica],
+    });
+
+    const customPath = path.join(replica, "admin-state.json");
+    fs.writeFileSync(
+      customPath,
+      `${JSON.stringify(
+        {
+          version: 1,
+          savedAt: "2025-06-01T00:00:00.000Z",
+          services: [
+            {
+              id: "canva-pro",
+              nameEn: "Canva Pro Kuwait Custom",
+              nameAr: "كانفا",
+              descriptionEn: "custom",
+              descriptionAr: "مخصص",
+              prices: { month: 9, year: 90 },
+            },
+          ],
+          settings: { catalogSeeded: true },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+
+    const wrote = writeAdminSnapshot({
+      services: DEFAULT_SERVICES,
+      settings: {},
+    });
+    assert.ok(wrote);
+    const kept = JSON.parse(fs.readFileSync(customPath, "utf8"));
+    assert.equal(kept.services[0].nameEn, "Canva Pro Kuwait Custom");
+    assert.equal(catalogMatchesDefaults(kept.services), false);
+  });
+
+  it("writes admin-state.json to multiple durable directories", () => {
+    const one = fs.mkdtempSync(path.join(os.tmpdir(), "gs-multi-a-"));
+    const two = fs.mkdtempSync(path.join(os.tmpdir(), "gs-multi-b-"));
+    dirs.push(one, two);
+    initDatabase(path.join(one, "unused.db"), {
+      engine: "json",
+      jsonPath: path.join(one, "globalstore.json"),
+      replicaDirs: [two],
+    });
+    seedDatabase();
+    assert.ok(fs.existsSync(path.join(one, "admin-state.json")));
+    assert.ok(fs.existsSync(path.join(two, "admin-state.json")));
+    assert.ok(fs.existsSync(path.join(two, "globalstore.json")));
+    const fromOne = JSON.parse(fs.readFileSync(path.join(one, "admin-state.json"), "utf8"));
+    const fromTwo = JSON.parse(fs.readFileSync(path.join(two, "admin-state.json"), "utf8"));
+    assert.equal(fromOne.services.length, fromTwo.services.length);
+    assert.ok(fromOne.services.length > 0);
   });
 });
