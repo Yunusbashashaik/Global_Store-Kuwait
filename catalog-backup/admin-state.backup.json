@@ -1,0 +1,823 @@
+{
+  "version": 1,
+  "savedAt": "2026-09-17T00:00:00.000Z",
+  "services": [
+    {
+      "id": "netflix-prime-combo",
+      "icon": "🎬",
+      "accent": "#e50914",
+      "typeEn": "Shared / Private",
+      "typeAr": "مشترك / خاص",
+      "nameEn": "🎬 Netflix + Prime Video Combo (One Device)",
+      "nameAr": "🎬 باقة نتفليكس + برايم فيديو",
+      "descriptionEn": "🎬 Netflix + Prime Video Combo\n✅ Netflix + Prime Video Access\n✅ Watch Movies, Series & Originals\n✅ Shared / Private Screen Options Available\n✅ HD / 4K Streaming (content dependent)\n✅ One Device Access\n✅ Login Warranty Available",
+      "descriptionAr": "🎬 باقة نتفليكس + برايم فيديو\n✅ الوصول إلى نتفليكس + برايم فيديو\n✅ مشاهدة الأفلام والمسلسلات والمحتوى الأصلي\n✅ خيارات شاشة مشتركة / خاصة متوفرة\n✅ بث بجودة HD / 4K حسب المحتوى\n✅ جهاز واحد\n✅ ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/netflix-prime-combo.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 0
+    },
+    {
+      "id": "prime-video-shared",
+      "icon": "🎬",
+      "accent": "#00a8e1",
+      "typeEn": "Shared Account",
+      "typeAr": "حساب مشترك",
+      "nameEn": "🎬 Prime Video Shared Account",
+      "nameAr": "🎬 حساب برايم فيديو مشترك",
+      "descriptionEn": "🎬 Prime Video Shared Account\n✅ Shared Account Access\n✅ Watch Movies, Series & Amazon Originals\n✅ One Device / One Screen Access\n✅ HD Streaming Available (content dependent)\n✅ Login Warranty Available",
+      "descriptionAr": "🎬 حساب برايم فيديو مشترك\n✅ وصول إلى الحساب المشترك\n✅ مشاهدة الأفلام والمسلسلات وأعمال أمازون الأصلية\n✅ جهاز واحد / شاشة واحدة\n✅ بث بجودة HD حسب المحتوى\n✅ ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/prime-video-shared.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "prime-video-private",
+      "icon": "🎬",
+      "accent": "#00a8e1",
+      "typeEn": "Private Screen",
+      "typeAr": "شاشة خاصة",
+      "nameEn": "🎬 Prime Video Private Screen",
+      "nameAr": "🎬 شاشة خاصة برايم فيديو",
+      "descriptionEn": "🎬 Prime Video Private Screen\n✅ Private Screen Access\n✅ Watch Movies, Series & Amazon Originals\n✅ One User / One Screen Access\n✅ HD Streaming Available (content dependent)\n✅ Login Warranty Available",
+      "descriptionAr": "🎬 شاشة خاصة برايم فيديو\n✅ وصول إلى شاشة خاصة\n✅ مشاهدة الأفلام والمسلسلات وأعمال أمازون الأصلية\n✅ مستخدم واحد / شاشة واحدة\n✅ بث HD حسب المحتوى\n✅ ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 2,
+        "year": 8
+      },
+      "imageUrl": "/service-images/prime-video-private.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "prime-video-full",
+      "icon": "🎬",
+      "accent": "#00a8e1",
+      "typeEn": "Full Account",
+      "typeAr": "حساب كامل",
+      "nameEn": "🎬 Prime Video Full Account",
+      "nameAr": "🎬 حساب برايم فيديو كامل",
+      "descriptionEn": "🎬 Prime Video Full Account\n✅ Full Access Account\n✅ Watch Movies, Series & Amazon Originals\n✅ HD / 4K Streaming Support (content dependent)\n✅ Multiple Device Support (as per account plan)\n✅ Login Warranty Available",
+      "descriptionAr": "🎬 حساب برايم فيديو كامل\n✅ حساب كامل الصلاحيات\n✅ مشاهدة الأفلام والمسلسلات وأعمال أمازون الأصلية\n✅ دعم بث HD / 4K حسب المحتوى\n✅ دعم أجهزة متعددة حسب الخطة\n✅ ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 4,
+        "year": 45
+      },
+      "imageUrl": "/service-images/prime-video-full.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "netflix-full-account",
+      "icon": "🎬",
+      "accent": "#e50914",
+      "typeEn": "Full Account",
+      "typeAr": "حساب كامل",
+      "nameEn": "🎬 Netflix Full Account",
+      "nameAr": "🎬 حساب نتفليكس كامل",
+      "descriptionEn": "🎬 Netflix Full Account\n✅ Full Account Access\n✅ Multiple Screens Available (Plan Dependent)\n✅ Watch Movies, Series & Originals\n✅ HD / Full HD / 4K Quality (Plan Dependent)\n✅ All Netflix Features Available\n✅ Secure Login Access\n✅ Long-Term Warranty (Terms Apply)",
+      "descriptionAr": "🎬 حساب نتفليكس كامل\n✅ وصول كامل إلى الحساب\n✅ شاشات متعددة حسب الخطة\n✅ مشاهدة الأفلام والمسلسلات والمحتوى الأصلي\n✅ جودة HD / Full HD / 4K حسب الخطة\n✅ جميع ميزات نتفليكس متوفرة\n✅ تسجيل دخول آمن\n✅ ضمان طويل الأمد (حسب الشروط)",
+      "prices": {
+        "month": 6,
+        "year": 70
+      },
+      "imageUrl": "/service-images/netflix-full-account.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "netflix-private-screen",
+      "icon": "🎬",
+      "accent": "#e50914",
+      "typeEn": "Private Screen",
+      "typeAr": "شاشة خاصة",
+      "nameEn": "🎬 Netflix Private Screen",
+      "nameAr": "🎬 شاشة نتفليكس خاصة",
+      "descriptionEn": "🎬 Netflix Private Screen\n✅ Private Account Access\n✅ Only One User / One Screen\n✅ Full HD / 4K Available (Plan Dependent)\n✅ Personal Viewing Experience\n✅ No Sharing With Others\n✅ Stable & Secure Login\n✅ Long-Term Access Warranty (Terms Apply)",
+      "descriptionAr": "🎬 شاشة نتفليكس خاصة\n✅ وصول إلى حساب خاص\n✅ مستخدم واحد / شاشة واحدة فقط\n✅ جودة Full HD / 4K حسب الخطة\n✅ تجربة مشاهدة شخصية\n✅ بدون مشاركة مع الآخرين\n✅ تسجيل دخول مستقر وآمن\n✅ ضمان وصول طويل الأمد (حسب الشروط)",
+      "prices": {
+        "month": 1.5,
+        "year": 10
+      },
+      "imageUrl": "/service-images/netflix-private-screen.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "apple-music-premium-shared",
+      "icon": "🎵",
+      "accent": "#fc3c44",
+      "typeEn": "Shared Account",
+      "typeAr": "حساب مشترك",
+      "nameEn": "🎵 Apple Music Premium Shared Account",
+      "nameAr": "🎵 حساب أبل ميوزك بريميوم مشترك",
+      "descriptionEn": "🎵 Apple Music Premium Shared Account\n📱 Working on 1 Device Only\n✅ 100 Million+ Songs Access\n✅ Ad-Free Music Streaming\n✅ High Quality Audio\n✅ Offline Download Available\n✅ Premium Music Library Access\n✅ Login Warranty Provided\n⚠️ Only One Device Login Allowed\n⚠️ Do Not Change Account Settings / Password",
+      "descriptionAr": "🎵 حساب أبل ميوزك بريميوم مشترك\n📱 يعمل على جهاز واحد فقط\n✅ الوصول إلى أكثر من 100 مليون أغنية\n✅ الاستماع للموسيقى بدون إعلانات\n✅ صوت بجودة عالية\n✅ تحميل الأغاني والاستماع بدون إنترنت\n✅ الوصول إلى مكتبة موسيقى بريميوم\n✅ ضمان تسجيل الدخول متوفر\n⚠️ يسمح بتسجيل دخول جهاز واحد فقط\n⚠️ لا تقم بتغيير إعدادات الحساب / كلمة المرور",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/apple-music-premium-shared.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 6
+    },
+    {
+      "id": "mubi-premium-shared",
+      "icon": "🎬",
+      "accent": "#000000",
+      "typeEn": "Shared Account",
+      "typeAr": "حساب مشترك",
+      "nameEn": "🎬 MUBI Premium Shared Account",
+      "nameAr": "🎬 حساب موبي بريميوم مشترك",
+      "descriptionEn": "🎬 MUBI Premium Shared Account\n📱 Working on 1 Device Only\n✅ Curated Collection of Award-Winning Movies\n✅ New Handpicked Film Every Day\n✅ Exclusive Independent & Classic Films\n✅ HD Streaming Quality\n✅ Premium Access Included\n✅ Login Warranty Provided\n⚠️ Only One Device Login Allowed\n⚠️ Do Not Change Email / Password / Account Settings",
+      "descriptionAr": "🎬 حساب موبي بريميوم مشترك\n📱 يعمل على جهاز واحد فقط\n✅ مجموعة مختارة من الأفلام الحائزة على جوائز\n✅ فيلم جديد مختار بعناية كل يوم\n✅ أفلام مستقلة وكلاسيكية حصرية\n✅ جودة بث HD\n✅ وصول بريميوم متوفر\n✅ ضمان تسجيل الدخول متوفر\n⚠️ يسمح بتسجيل دخول جهاز واحد فقط\n⚠️ لا تقم بتغيير البريد الإلكتروني / كلمة المرور / إعدادات الحساب",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/mubi-premium-shared.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 7
+    },
+    {
+      "id": "osn-plus-premium-shared",
+      "icon": "🎬",
+      "accent": "#6d28d9",
+      "typeEn": "Shared Account",
+      "typeAr": "حساب مشترك",
+      "nameEn": "🎬 OSN+ Premium Shared Account",
+      "nameAr": "🎬 حساب OSN+ بريميوم مشترك",
+      "descriptionEn": "🎬 OSN+ Premium Shared Account\n📱 Working on 1 Device Only\n✅ Premium Movies & Series Access\n✅ HBO, OSN Originals & Exclusive Content\n✅ HD Streaming Quality\n✅ Ad-Free Experience\n✅ Login Warranty Provided\n⚠️ Only One Device Login Allowed\n⚠️ Do Not Change Email / Password / Account Settings",
+      "descriptionAr": "🎬 حساب OSN+ بريميوم مشترك\n📱 يعمل على جهاز واحد فقط\n✅ الوصول إلى الأفلام والمسلسلات المميزة\n✅ محتوى HBO و OSN الأصلي والحصري\n✅ جودة بث HD\n✅ تجربة مشاهدة بدون إعلانات\n✅ ضمان تسجيل الدخول متوفر\n⚠️ يسمح بتسجيل دخول جهاز واحد فقط\n⚠️ لا تقم بتغيير البريد الإلكتروني / كلمة المرور / إعدادات الحساب",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/osn-plus-premium-shared.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 8
+    },
+    {
+      "id": "crunchyroll-premium-shared",
+      "icon": "🍥",
+      "accent": "#f47521",
+      "typeEn": "Shared Account",
+      "typeAr": "حساب مشترك",
+      "nameEn": "🍥 Crunchyroll Premium Shared Account",
+      "nameAr": "🍥 حساب كرنشي رول بريميوم مشترك",
+      "descriptionEn": "🍥 Crunchyroll Premium Shared Account\n📱 Working on 1 Device Only\n✅ Premium Anime Access\n✅ No Ads Streaming\n✅ HD Quality Available\n✅ Login Warranty Provided\n⚠️ Only One Device Login Allowed\n⚠️ Do Not Change Account Settings / Password",
+      "descriptionAr": "🍥 حساب كرنشي رول بريميوم مشترك\n📱 يعمل على جهاز واحد فقط\n✅ الوصول إلى محتوى الأنمي المميز\n✅ مشاهدة بدون إعلانات\n✅ جودة HD متوفرة\n✅ ضمان تسجيل الدخول متوفر\n⚠️ يسمح بتسجيل دخول جهاز واحد فقط\n⚠️ لا تقم بتغيير إعدادات الحساب / كلمة المرور",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/crunchyroll-premium-shared.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 9
+    },
+    {
+      "id": "grammarly-premium",
+      "icon": "✍️",
+      "accent": "#15c39a",
+      "typeEn": "Personal Account",
+      "typeAr": "حساب شخصي",
+      "nameEn": "✍️ Grammarly Premium Account",
+      "nameAr": "✍️ حساب Grammarly بريميوم",
+      "descriptionEn": "✍️ Grammarly Premium Account\n✅ Advanced Grammar & Spelling Correction\n✅ AI Writing Suggestions\n✅ Tone & Clarity Improvements\n✅ Plagiarism Checker\n✅ Vocabulary Enhancement\n✅ Writing Style Suggestions\n✅ Works on Browser, Mobile & Desktop\n📌 Plan Type: Premium Account\n📱 Access: Personal Login\n🔐 Login Warranty Available\n⭐ Best For: Students, Writers, Bloggers & Professionals",
+      "descriptionAr": "✍️ حساب Grammarly بريميوم\n✅ تصحيح متقدم للقواعد والإملاء\n✅ اقتراحات الكتابة بالذكاء الاصطناعي\n✅ تحسين النبرة والوضوح\n✅ مدقق الانتحال\n✅ تحسين المفردات\n✅ اقتراحات أسلوب الكتابة\n✅ يعمل على المتصفح والهاتف والكمبيوتر\n📌 نوع الخطة: حساب بريميوم\n📱 الوصول: تسجيل دخول شخصي\n🔐 ضمان تسجيل الدخول متوفر\n⭐ الأفضل للطلاب والكتاب والمدونين والمحترفين",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/grammarly-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 10
+    },
+    {
+      "id": "youtube-premium-personal",
+      "icon": "▶️",
+      "accent": "#ff0000",
+      "typeEn": "Personal Account",
+      "typeAr": "حساب شخصي",
+      "nameEn": "▶️ YouTube Premium Personal Account",
+      "nameAr": "▶️ حساب يوتيوب بريميوم شخصي",
+      "descriptionEn": "▶️ YouTube Premium Personal Account\n✅ Ad-Free YouTube Watching\n✅ YouTube Music Premium Included\n✅ Background Play (screen off / other apps)\n✅ Offline Video Downloads\n✅ Works on Mobile, Tablet & PC\n✅ Personal Account Only (1 User)\n✅ Login Warranty Available",
+      "descriptionAr": "▶️ حساب يوتيوب بريميوم شخصي\n✅ مشاهدة يوتيوب بدون إعلانات\n✅ يتضمن YouTube Music Premium\n✅ تشغيل في الخلفية (مع إغلاق الشاشة / تطبيقات أخرى)\n✅ تحميل الفيديوهات للمشاهدة بدون إنترنت\n✅ يعمل على الهاتف والتابلت والكمبيوتر\n✅ حساب شخصي فقط (مستخدم واحد)\n✅ ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/youtube-premium-personal.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 11
+    },
+    {
+      "id": "chatgpt-plus-shared",
+      "icon": "🤖",
+      "accent": "#10a37f",
+      "typeEn": "Shared Account",
+      "typeAr": "حساب مشترك",
+      "nameEn": "🤖 ChatGPT Plus Shared Account",
+      "nameAr": "🤖 حساب ChatGPT Plus مشترك",
+      "descriptionEn": "🤖 ChatGPT Plus Shared Account\n✅ Access to ChatGPT AI Features\n✅ Advanced AI Models & Tools\n✅ Writing, Coding & Research Assistance\n📱 Working on 1 Device Only\n🔒 Shared Account Access\n⚡ Instant Login Available",
+      "descriptionAr": "🤖 حساب ChatGPT Plus مشترك\n✅ الوصول إلى ميزات ChatGPT للذكاء الاصطناعي\n✅ نماذج وأدوات ذكاء اصطناعي متقدمة\n✅ المساعدة في الكتابة والبرمجة والبحث\n📱 يعمل على جهاز واحد فقط\n🔒 وصول إلى حساب مشترك\n⚡ تسجيل دخول فوري متوفر",
+      "prices": {
+        "month": 2,
+        "year": 10
+      },
+      "imageUrl": "/service-images/chatgpt-plus-shared.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 12
+    },
+    {
+      "id": "grok-ai-premium",
+      "icon": "🤖",
+      "accent": "#1d9bf0",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "🤖 Grok AI Premium Account",
+      "nameAr": "🤖 حساب Grok AI بريميوم",
+      "descriptionEn": "🤖 Grok AI Premium Account\n✅ Access to Grok AI Features\n✅ Advanced AI Chatbot & Assistance\n✅ Image Generation & AI Tools\n✅ Fast Response & Premium Features\n📱 Working on 1 Device Only\n🔒 Personal Login Warranty\n⚡ Instant Access Available",
+      "descriptionAr": "🤖 حساب Grok AI بريميوم\n✅ الوصول إلى ميزات Grok AI\n✅ مساعد ودردشة ذكاء اصطناعي متقدمة\n✅ إنشاء الصور وأدوات الذكاء الاصطناعي\n✅ استجابة سريعة وميزات بريميوم\n📱 يعمل على جهاز واحد فقط\n🔒 ضمان تسجيل دخول شخصي\n⚡ وصول فوري متوفر",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/grok-ai-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 13
+    },
+    {
+      "id": "gemini-ai-18-months",
+      "icon": "🤖",
+      "accent": "#4285f4",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "🤖 Gemini AI 18 Months Available",
+      "nameAr": "🤖 Gemini AI متوفر لمدة 18 شهر",
+      "descriptionEn": "🤖 Gemini AI 18 Months Available\n✅ Premium AI Features Access\n✅ Advanced AI Models\n✅ Higher Usage Limits\n✅ AI Writing & Image Generation Tools\n✅ Google Workspace AI Features\n✅ Long-Term Access (18 Months)\n📱 One Device Login\n🔒 Secure & Reliable Access",
+      "descriptionAr": "🤖 Gemini AI متوفر لمدة 18 شهر\n✅ الوصول إلى ميزات الذكاء الاصطناعي المميزة\n✅ نماذج ذكاء اصطناعي متقدمة\n✅ حدود استخدام أعلى\n✅ أدوات كتابة وإنشاء صور بالذكاء الاصطناعي\n✅ ميزات الذكاء الاصطناعي في Google Workspace\n✅ وصول طويل الأمد (18 شهر)\n📱 تسجيل دخول جهاز واحد\n🔒 وصول آمن وموثوق",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/gemini-ai-18-months.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 14
+    },
+    {
+      "id": "canva-pro-available",
+      "icon": "🎨",
+      "accent": "#00c4cc",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "🎨 Canva Pro Available",
+      "nameAr": "🎨 Canva Pro متوفر",
+      "descriptionEn": "🎨 Canva Pro Available\n✅ Premium Templates Access\n✅ Pro Elements & Photos\n✅ Background Remover Tool\n✅ Magic Resize Feature\n✅ Brand Kit Access\n✅ AI Design Tools\n✅ High Quality Export\n📱 One Device Login\n🔒 Secure & Reliable Access",
+      "descriptionAr": "🎨 Canva Pro متوفر\n✅ الوصول إلى القوالب المميزة\n✅ عناصر وصور Pro\n✅ أداة إزالة الخلفية\n✅ ميزة تغيير الحجم السحري\n✅ الوصول إلى Brand Kit\n✅ أدوات تصميم بالذكاء الاصطناعي\n✅ تصدير بجودة عالية\n📱 تسجيل دخول جهاز واحد\n🔒 وصول آمن وموثوق",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/canva-pro-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 15
+    },
+    {
+      "id": "disney-plus-premium",
+      "icon": "📺",
+      "accent": "#113ccf",
+      "typeEn": "One Phone",
+      "typeAr": "هاتف واحد",
+      "nameEn": "📺 Disney+ Premium Account",
+      "nameAr": "📺 حساب Disney+ بريميوم",
+      "descriptionEn": "📺 Disney+ Premium Account\n📱 Working on 1 Phone Only\n🌍 Works with Paid VPN\n🎬 Watch Movies, Series, Originals & Kids Content\n✨ Premium Streaming Experience\n🔐 Personal Login Access\n⚡ Smooth & Reliable Usage",
+      "descriptionAr": "📺 حساب Disney+ بريميوم\n📱 يعمل على هاتف واحد فقط\n🌍 يعمل مع VPN مدفوع\n🎬 مشاهدة الأفلام والمسلسلات والمحتوى الأصلي ومحتوى الأطفال\n✨ تجربة بث بريميوم\n🔐 وصول تسجيل دخول شخصي\n⚡ استخدام سلس وموثوق",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/disney-plus-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 16
+    },
+    {
+      "id": "zee5-premium",
+      "icon": "📺",
+      "accent": "#6f2da8",
+      "typeEn": "One Phone",
+      "typeAr": "هاتف واحد",
+      "nameEn": "📺 ZEE5 Premium Account",
+      "nameAr": "📺 حساب ZEE5 بريميوم",
+      "descriptionEn": "📺 ZEE5 Premium Account\n📱 Working on 1 Phone Only\n🌍 Works with Paid VPN\n🎬 Watch Movies, Web Series, TV Shows & Originals\n✨ Premium Streaming Access\n🔐 Personal Login | Smooth Experience",
+      "descriptionAr": "📺 حساب ZEE5 بريميوم\n📱 يعمل على هاتف واحد فقط\n🌍 يعمل مع VPN مدفوع\n🎬 مشاهدة الأفلام والمسلسلات والبرامج والمحتوى الأصلي\n✨ وصول بث بريميوم\n🔐 تسجيل دخول شخصي | تجربة سلسة",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/zee5-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 17
+    },
+    {
+      "id": "hulu-premium",
+      "icon": "📺",
+      "accent": "#1ce783",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "📺 Hulu Premium Subscription",
+      "nameAr": "📺 اشتراك Hulu بريميوم",
+      "descriptionEn": "📺 Hulu Premium Subscription\n🔹 One Device Access\n🔹 Watch Movies, Series & Hulu Originals\n🔹 HD Quality Streaming\n🔹 Fast & Secure Login\n🔹 Instant Activation\n🔹 Login Warranty Available",
+      "descriptionAr": "📺 اشتراك Hulu بريميوم\n🔹 وصول لجهاز واحد\n🔹 مشاهدة الأفلام والمسلسلات ومحتوى Hulu الأصلي\n🔹 بث بجودة HD\n🔹 تسجيل دخول سريع وآمن\n🔹 تفعيل فوري\n🔹 ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/hulu-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 18
+    },
+    {
+      "id": "ullu-premium",
+      "icon": "📺",
+      "accent": "#c41e3a",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "📺 Ullu Premium Subscription",
+      "nameAr": "📺 اشتراك Ullu بريميوم",
+      "descriptionEn": "📺 Ullu Premium Subscription\n🔹 One Device Access\n🔹 Enjoy Premium Web Series & Exclusive Content\n🔹 High Quality Streaming\n🔹 Fast & Secure Login\n🔹 Instant Activation\n🔹 Login Warranty Available",
+      "descriptionAr": "📺 اشتراك Ullu بريميوم\n🔹 وصول لجهاز واحد\n🔹 الاستمتاع بالمسلسلات والمحتوى الحصري المميز\n🔹 بث بجودة عالية\n🔹 تسجيل دخول سريع وآمن\n🔹 تفعيل فوري\n🔹 ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/ullu-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 19
+    },
+    {
+      "id": "spotify-premium",
+      "icon": "🎵",
+      "accent": "#1db954",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "🎵 Spotify Premium Available",
+      "nameAr": "🎵 سبوتيفاي بريميوم متوفر",
+      "descriptionEn": "🎵 Spotify Premium Available\n🎧 Ad-Free Music Listening\n🔥 Unlimited Songs & Skips\n📥 Download Music & Listen Offline\n🎶 High Quality Audio\n📱 Access to Premium Features\n🔐 Subscription Details:\n✅ 1 Device Access\n✅ Fast & Secure Login\n✅ Premium Music Experience",
+      "descriptionAr": "🎵 سبوتيفاي بريميوم متوفر\n🎧 استماع للموسيقى بدون إعلانات\n🔥 أغاني وتخطي غير محدود\n📥 تحميل الموسيقى والاستماع بدون إنترنت\n🎶 صوت بجودة عالية\n📱 الوصول إلى الميزات المميزة\n🔐 تفاصيل الاشتراك:\n✅ وصول لجهاز واحد\n✅ تسجيل دخول سريع وآمن\n✅ تجربة موسيقى بريميوم",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/spotify-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 20
+    },
+    {
+      "id": "nordvpn-available",
+      "icon": "🛡️",
+      "accent": "#4687ff",
+      "typeEn": "VPN",
+      "typeAr": "VPN",
+      "nameEn": "🛡️ NordVPN Available",
+      "nameAr": "🛡️ نورد VPN متوفر",
+      "descriptionEn": "🛡️ NordVPN Available\n🌐 Secure & Private Internet Access\n⚡ Fast VPN Servers Worldwide\n🔒 Strong Encryption & Online Protection\n🚫 Hide IP Address & Browse Privately\n🎬 Smooth Streaming & Global Access\n🔐 Subscription Details:\n✅ 1 Device Access\n✅ Fast & Secure Login\n✅ Premium VPN Access\n🚀 NordVPN — Stay Safe & Connected Anywhere.",
+      "descriptionAr": "🛡️ نورد VPN متوفر\n🌐 وصول آمن وخاص للإنترنت\n⚡ خوادم VPN سريعة حول العالم\n🔒 تشفير قوي وحماية عبر الإنترنت\n🚫 إخفاء عنوان IP والتصفح بشكل خاص\n🎬 بث سلس ووصول عالمي\n🔐 تفاصيل الاشتراك:\n✅ وصول لجهاز واحد\n✅ تسجيل دخول سريع وآمن\n✅ وصول VPN بريميوم\n🚀 NordVPN — ابقَ آمناً ومتصلًا في أي مكان.",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/nordvpn-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 21
+    },
+    {
+      "id": "capcut-pro-available",
+      "icon": "🎞️",
+      "accent": "#00f2ea",
+      "typeEn": "Pro Access",
+      "typeAr": "وصول Pro",
+      "nameEn": "🎞️ CapCut Pro Available",
+      "nameAr": "🎞️ كاب كات برو متوفر",
+      "descriptionEn": "🎞️ CapCut Pro Available\n🎬 Advanced Video Editing Tools\n✨ Premium Effects & Filters\n🎵 Pro Music & Templates\n🤖 AI Editing Features\n🖼️ Background Removal & Auto Captions\n📱 Export High Quality Videos\n🔐 Subscription Details:\n✅ Pro Access\n✅ Fast & Secure Login\n✅ Premium Features Unlocked\n🎨 CapCut Pro — Create Professional Videos Easily",
+      "descriptionAr": "🎞️ كاب كات برو متوفر\n🎬 أدوات متقدمة لتحرير الفيديو\n✨ تأثيرات وفلاتر مميزة\n🎵 موسيقى وقوالب احترافية\n🤖 ميزات تحرير بالذكاء الاصطناعي\n🖼️ إزالة الخلفية والترجمة التلقائية\n📱 تصدير فيديوهات بجودة عالية\n🔐 تفاصيل الاشتراك:\n✅ وصول Pro\n✅ تسجيل دخول سريع وآمن\n✅ فتح الميزات المميزة\n🎨 CapCut Pro — أنشئ فيديوهات احترافية بسهولة",
+      "prices": {
+        "month": 1.5,
+        "year": 8
+      },
+      "imageUrl": "/service-images/capcut-pro-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 22
+    },
+    {
+      "id": "peacock-premium",
+      "icon": "🦚",
+      "accent": "#f4c430",
+      "typeEn": "Premium",
+      "typeAr": "بريميوم",
+      "nameEn": "🦚 Peacock Premium Available",
+      "nameAr": "🦚 بيكوك بريميوم متوفر",
+      "descriptionEn": "🦚 Peacock Premium Available\n🎬 Movies & TV Shows\n🔥 Peacock Originals & Exclusive Series\n📺 NBC & Bravo Shows\n⚽ Live Sports (Premier League, WWE, NBA & More)\n🎥 Universal Movies Collection\n📱 Watch Anytime, Anywhere",
+      "descriptionAr": "🦚 بيكوك بريميوم متوفر\n🎬 أفلام وبرامج تلفزيونية\n🔥 مسلسلات Peacock الأصلية والحصرية\n📺 عروض NBC و Bravo\n⚽ رياضات مباشرة (الدوري الإنجليزي، WWE، NBA والمزيد)\n🎥 مجموعة أفلام Universal\n📱 شاهد في أي وقت وأي مكان",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/peacock-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 23
+    },
+    {
+      "id": "sony-liv-premium",
+      "icon": "📺",
+      "accent": "#005aff",
+      "typeEn": "Premium",
+      "typeAr": "بريميوم",
+      "nameEn": "📺 Sony LIV Premium Available",
+      "nameAr": "📺 سوني ليف بريميوم متوفر",
+      "descriptionEn": "📺 Sony LIV Premium Available\n✅ Watch Live TV Channels\n✅ Movies & Web Series\n✅ Sony Originals\n✅ Live Sports (Cricket, WWE, Football & More)\n✅ HD & 4K Streaming Support\n✅ Multiple Language Content\n✅ Download & Watch Offline",
+      "descriptionAr": "📺 سوني ليف بريميوم متوفر\n✅ مشاهدة قنوات التلفزيون المباشرة\n✅ أفلام ومسلسلات ويب\n✅ محتوى Sony الأصلي\n✅ رياضات مباشرة (كريكيت، WWE، كرة القدم والمزيد)\n✅ دعم بث HD و 4K\n✅ محتوى بلغات متعددة\n✅ تحميل ومشاهدة بدون إنترنت",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/sony-liv-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 24
+    },
+    {
+      "id": "starzplay-available",
+      "icon": "🎬",
+      "accent": "#0399fa",
+      "typeEn": "Premium",
+      "typeAr": "بريميوم",
+      "nameEn": "🎬 STARZPLAY Available",
+      "nameAr": "🎬 STARZPLAY متوفر",
+      "descriptionEn": "🎬 STARZPLAY Available\n🍿 Premium Movies & TV Series Streaming\n🔥 Exclusive Originals, Hollywood Movies & Arabic Content\n⚽ Live Sports & Entertainment Channels\n📺 Watch Anytime on Your Favorite Devices\n✨ High-Quality Streaming Experience",
+      "descriptionAr": "🎬 STARZPLAY متوفر\n🍿 بث أفلام ومسلسلات تلفزيونية بريميوم\n🔥 أعمال أصلية حصرية وأفلام هوليوود ومحتوى عربي\n⚽ قنوات رياضية وترفيهية مباشرة\n📺 شاهد في أي وقت على أجهزتك المفضلة\n✨ تجربة بث بجودة عالية",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/starzplay-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 25
+    },
+    {
+      "id": "surfshark-vpn-available",
+      "icon": "🦈",
+      "accent": "#1e5eff",
+      "typeEn": "VPN",
+      "typeAr": "VPN",
+      "nameEn": "🦈 Surfshark VPN Available",
+      "nameAr": "🦈 Surfshark VPN متوفر",
+      "descriptionEn": "🦈 Surfshark VPN Available\n🔒 Secure & Private Internet Access\n🌍 Access Content From Anywhere In The World\n⚡ Fast VPN Servers With Unlimited Devices Support\n🛡️ Protect Your Online Privacy And Data\n📱 Easy Setup & Reliable Connection",
+      "descriptionAr": "🦈 Surfshark VPN متوفر\n🔒 وصول آمن وخاص للإنترنت\n🌍 الوصول إلى المحتوى من أي مكان في العالم\n⚡ خوادم VPN سريعة مع دعم أجهزة غير محدود\n🛡️ حماية خصوصيتك وبياناتك عبر الإنترنت\n📱 إعداد سهل واتصال موثوق",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/surfshark-vpn-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 26
+    },
+    {
+      "id": "expressvpn-premium",
+      "icon": "🔒",
+      "accent": "#da3940",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "🔒 ExpressVPN Premium",
+      "nameAr": "🔒 ExpressVPN بريميوم",
+      "descriptionEn": "🔒 ExpressVPN Premium\n✅ Fast & Secure VPN Access\n✅ Protect Your Online Privacy\n✅ Worldwide Server Access\n✅ One Device Login Only",
+      "descriptionAr": "🔒 ExpressVPN بريميوم\n✅ وصول VPN سريع وآمن\n✅ حماية خصوصيتك عبر الإنترنت\n✅ الوصول إلى خوادم حول العالم\n✅ تسجيل دخول لجهاز واحد فقط",
+      "prices": {
+        "month": 1.5,
+        "year": 10
+      },
+      "imageUrl": "/service-images/expressvpn-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 27
+    },
+    {
+      "id": "proton-vpn-premium",
+      "icon": "🔒",
+      "accent": "#6d4aff",
+      "typeEn": "One Device",
+      "typeAr": "جهاز واحد",
+      "nameEn": "🔒 Proton VPN Premium",
+      "nameAr": "🔒 Proton VPN بريميوم",
+      "descriptionEn": "🔒 Proton VPN Premium\n✅ High-Speed Secure VPN Access\n✅ Privacy & Online Protection\n✅ One Device Login Only\n✅ Fast & Reliable Connection",
+      "descriptionAr": "🔒 Proton VPN بريميوم\n✅ وصول VPN آمن عالي السرعة\n✅ حماية الخصوصية والأمان عبر الإنترنت\n✅ تسجيل دخول لجهاز واحد فقط\n✅ اتصال سريع وموثوق",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/proton-vpn-premium.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 28
+    },
+    {
+      "id": "apple-tv-plus-available",
+      "icon": "🍎",
+      "accent": "#a2aaad",
+      "typeEn": "Premium",
+      "typeAr": "بريميوم",
+      "nameEn": "🍎 Apple TV+ Available",
+      "nameAr": "🍎 Apple TV+ متوفر",
+      "descriptionEn": "🍎 Apple TV+ Available\n🎬 Premium Movies & Original Series\n⭐ Apple Originals & Exclusive Content\n📺 Watch Anytime, Anywhere\n🔥 High Quality Streaming Experience\n✅ Secure Login Warranty",
+      "descriptionAr": "🍎 Apple TV+ متوفر\n🎬 أفلام مميزة ومسلسلات أصلية\n⭐ محتوى Apple الأصلي والحصري\n📺 شاهد في أي وقت وأي مكان\n🔥 تجربة بث بجودة عالية\n✅ ضمان تسجيل دخول آمن",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/apple-tv-plus-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 29
+    },
+    {
+      "id": "hbo-max-available",
+      "icon": "🎬",
+      "accent": "#b535f6",
+      "typeEn": "Premium",
+      "typeAr": "بريميوم",
+      "nameEn": "🎬 HBO Max Available",
+      "nameAr": "🎬 HBO Max متوفر",
+      "descriptionEn": "🎬 HBO Max Available\n⭐ Premium Streaming Service\n🎥 Movies, Web Series & HBO Originals\n🔥 Latest Hollywood Content\n📺 Watch Anytime, Anywhere\n✅ Fast & Reliable Access\n🔐 Secure Login Warranty",
+      "descriptionAr": "🎬 HBO Max متوفر\n⭐ خدمة بث بريميوم مميزة\n🎥 أفلام ومسلسلات ومحتوى HBO الأصلي\n🔥 أحدث محتوى هوليوود\n📺 شاهد في أي وقت وأي مكان\n✅ وصول سريع وموثوق\n🔐 ضمان تسجيل دخول آمن",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/hbo-max-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 30
+    },
+    {
+      "id": "paramount-plus-available",
+      "icon": "🌟",
+      "accent": "#0064ff",
+      "typeEn": "Premium",
+      "typeAr": "بريميوم",
+      "nameEn": "🌟 Paramount+ Available",
+      "nameAr": "🌟 Paramount+ متوفر",
+      "descriptionEn": "🌟 Paramount+ Available\n📺 Premium Paramount+ Subscription\n✅ Movies & Series Access\n✅ HD Quality Streaming\n✅ Fast & Reliable Service\n🔐 Login Warranty Available",
+      "descriptionAr": "🌟 Paramount+ متوفر\n📺 اشتراك Paramount+ بريميوم\n✅ الوصول إلى الأفلام والمسلسلات\n✅ بث بجودة HD\n✅ خدمة سريعة وموثوقة\n🔐 ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/paramount-plus-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 31
+    },
+    {
+      "id": "shahid-vip-available",
+      "icon": "🌟",
+      "accent": "#00d4aa",
+      "typeEn": "VIP",
+      "typeAr": "VIP",
+      "nameEn": "🌟 Shahid VIP Available",
+      "nameAr": "🌟 شاهد VIP متوفر",
+      "descriptionEn": "🌟 Shahid VIP Available\n📺 Premium Shahid VIP Subscription\n✅ Full Access Available\n✅ HD Quality Streaming\n✅ Movies & Series Enjoy Karein\n✅ Fast & Reliable Service\n🔐 Login Warranty Available",
+      "descriptionAr": "🌟 شاهد VIP متوفر\n📺 اشتراك شاهد VIP بريميوم\n✅ وصول كامل متوفر\n✅ بث بجودة HD\n✅ استمتع بالأفلام والمسلسلات\n✅ خدمة سريعة وموثوقة\n🔐 ضمان تسجيل الدخول متوفر",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/shahid-vip-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 32
+    },
+    {
+      "id": "genspark-ai",
+      "icon": "✨",
+      "accent": "#7c3aed",
+      "typeEn": "Premium AI",
+      "typeAr": "ذكاء اصطناعي",
+      "nameEn": "✨ Genspark AI Available",
+      "nameAr": "✨ Genspark AI متوفر",
+      "descriptionEn": "✨ Genspark AI Available\n✅ Premium AI Access\n✅ AI Search & Research Tool\n✅ Create Smart Content Easily\n✅ Fast Activation\n✅ Reliable Service",
+      "descriptionAr": "✨ Genspark AI متوفر\n✅ وصول ذكاء اصطناعي بريميوم\n✅ أداة بحث ودراسة بالذكاء الاصطناعي\n✅ إنشاء محتوى ذكي بسهولة\n✅ تفعيل سريع\n✅ خدمة موثوقة",
+      "prices": {
+        "month": 20,
+        "year": 240
+      },
+      "imageUrl": "/service-images/genspark-ai.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 33
+    },
+    {
+      "id": "claude-ai",
+      "icon": "🤖",
+      "accent": "#d97706",
+      "typeEn": "Premium AI",
+      "typeAr": "ذكاء اصطناعي",
+      "nameEn": "🤖 Claude AI Available",
+      "nameAr": "🤖 Claude AI متوفر",
+      "descriptionEn": "🤖 Claude AI Available\n✅ Premium AI Assistant\n✅ Advanced Writing & Research\n✅ Coding & Productivity Support\n✅ Fast Activation\n✅ Reliable Access",
+      "descriptionAr": "🤖 Claude AI متوفر\n✅ مساعد ذكاء اصطناعي بريميوم\n✅ كتابة وبحث متقدم\n✅ دعم البرمجة وزيادة الإنتاجية\n✅ تفعيل سريع\n✅ وصول موثوق",
+      "prices": {
+        "month": 8,
+        "year": 90
+      },
+      "imageUrl": "/service-images/claude-ai.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 34
+    },
+    {
+      "id": "magic-light-ai",
+      "icon": "✨",
+      "accent": "#ec4899",
+      "typeEn": "Premium AI",
+      "typeAr": "ذكاء اصطناعي",
+      "nameEn": "✨ Magic Light AI Available",
+      "nameAr": "✨ Magic Light AI متوفر",
+      "descriptionEn": "✨ Magic Light AI Available\n✅ AI Video Creation Tool\n✅ Create Stunning AI Videos\n✅ Premium Access\n✅ Fast & Reliable Service\n✅ Instant Activation",
+      "descriptionAr": "✨ Magic Light AI متوفر\n✅ أداة إنشاء فيديوهات بالذكاء الاصطناعي\n✅ إنشاء فيديوهات مذهلة بالذكاء الاصطناعي\n✅ وصول بريميوم\n✅ خدمة سريعة وموثوقة\n✅ تفعيل فوري",
+      "prices": {
+        "month": 8,
+        "year": 90
+      },
+      "imageUrl": "/service-images/magic-light-ai.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 35
+    },
+    {
+      "id": "chaupal-available",
+      "icon": "🎬",
+      "accent": "#f59e0b",
+      "typeEn": "Premium",
+      "typeAr": "بريميوم",
+      "nameEn": "🎬 Chaupal Available",
+      "nameAr": "🎬 تشوبال متوفر",
+      "descriptionEn": "🎬 Chaupal Available\n✅ Premium Subscription\n✅ Punjabi, Haryanvi & Regional Content\n✅ HD Quality Streaming\n✅ Fast Activation\n✅ Unlimited Entertainment",
+      "descriptionAr": "🎬 تشوبال متوفر\n✅ اشتراك بريميوم\n✅ محتوى بنجابي وهاريانفي ومحتوى إقليمي\n✅ بث بجودة HD\n✅ تفعيل سريع\n✅ ترفيه غير محدود",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/chaupal-available.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 36
+    },
+    {
+      "id": "tod-subscription",
+      "icon": "⚽",
+      "accent": "#16a34a",
+      "typeEn": "Sports",
+      "typeAr": "رياضة",
+      "nameEn": "⚽ TOD Subscription Available",
+      "nameAr": "⚽ اشتراك TOD متوفر",
+      "descriptionEn": "⚽ TOD Subscription Available\n✅ Watch Live Sports & Entertainment\n✅ Football, Movies & TV Shows\n✅ HD Streaming Quality\n✅ Fast Activation\n✅ Available on Multiple Devices\n📩 Order Now Today",
+      "descriptionAr": "⚽ اشتراك TOD متوفر\n✅ مشاهدة الرياضات المباشرة والترفيه\n✅ كرة القدم والأفلام والبرامج التلفزيونية\n✅ جودة بث HD\n✅ تفعيل سريع\n✅ متوفر على أجهزة متعددة\n📩 اطلب الآن اليوم",
+      "prices": {
+        "month": 0,
+        "year": 0
+      },
+      "imageUrl": "/service-images/tod-subscription.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 37
+    },
+    {
+      "id": "iptv-subscription",
+      "icon": "📺",
+      "accent": "#0ea5e9",
+      "typeEn": "IPTV",
+      "typeAr": "IPTV",
+      "nameEn": "📺 IPTV Subscription Available",
+      "nameAr": "📺 اشتراك IPTV متوفر",
+      "descriptionEn": "📺 IPTV Subscription Available\n✅ Thousands of Live TV Channels\n✅ Movies & Series Available\n✅ HD & 4K Quality Streaming\n✅ Works on Smart TV, Mobile & More\n✅ Fast Activation & Support\n📩 Contact Us Now for Subscription",
+      "descriptionAr": "📺 اشتراك IPTV متوفر\n✅ آلاف القنوات التلفزيونية المباشرة\n✅ أفلام ومسلسلات متوفرة\n✅ بث بجودة HD و 4K\n✅ يعمل على التلفزيون الذكي والهاتف والمزيد\n✅ تفعيل ودعم سريع\n📩 تواصل معنا الآن للاشتراك",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/iptv-subscription.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 38
+    },
+    {
+      "id": "tiktok-usa-accounts",
+      "icon": "🔥",
+      "accent": "#fe2c55",
+      "typeEn": "USA Account",
+      "typeAr": "حساب أمريكي",
+      "nameEn": "🔥 TikTok USA Accounts Available",
+      "nameAr": "🔥 حسابات تيك توك أمريكية متوفرة",
+      "descriptionEn": "🔥 TikTok USA Accounts Available\n✅ Ready to Login\n✅ Secure Access\n✅ Fast Service\n📲 Order Now",
+      "descriptionAr": "🔥 حسابات تيك توك أمريكية متوفرة\n✅ جاهزة لتسجيل الدخول\n✅ وصول آمن\n✅ خدمة سريعة\n📲 اطلب الآن",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/tiktok-usa-accounts.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 39
+    },
+    {
+      "id": "esim-travel-plans",
+      "icon": "📶",
+      "accent": "#2563eb",
+      "typeEn": "Travel eSIM",
+      "typeAr": "شريحة سفر",
+      "nameEn": "📶 eSIM With Travel Plans 🌍✈️",
+      "nameAr": "📶 شريحة eSIM مع خطط سفر 🌍✈️",
+      "descriptionEn": "📶 eSIM With Travel Plans 🌍✈️\n🌐 Stay Connected Anywhere, Anytime\n🚀 Get Affordable Travel eSIMs With Fast Activation\n📱 Instant Internet Access Without Physical SIM\n🌍 Coverage In Multiple Countries Worldwide\n⚡ Easy Setup And Reliable Connection\n✅ Perfect For Travelers, Business Trips & Vacations ✈️\n🔒 Secure And Hassle-Free Connectivity Everywhere",
+      "descriptionAr": "📶 شريحة eSIM مع خطط سفر 🌍✈️\n🌐 ابقَ متصلاً في أي مكان وأي وقت\n🚀 احصل على شرائح eSIM للسفر بأسعار مناسبة مع تفعيل سريع\n📱 إنترنت فوري بدون شريحة فعلية\n🌍 تغطية في العديد من الدول حول العالم\n⚡ إعداد سهل واتصال موثوق\n✅ مثالية للمسافرين ورحلات العمل والإجازات ✈️\n🔒 اتصال آمن وسهل بدون تعقيدات في كل مكان",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/esim-travel-plans.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 40
+    },
+    {
+      "id": "whatsapp-number",
+      "icon": "📱",
+      "accent": "#25d366",
+      "typeEn": "WhatsApp Number",
+      "typeAr": "رقم واتساب",
+      "nameEn": "📱 WhatsApp Number Available",
+      "nameAr": "📱 أرقام واتساب متوفرة",
+      "descriptionEn": "📱 WhatsApp Number Available\n🔐 Only Login Warranty Provided\n⚡ Get Active WhatsApp Numbers With Fast Delivery\n✅ Reliable Service With Login Support Only\n🚀 Easy Activation And Smooth Usage Experience\n⚠️ Note: Login Warranty Only. No Replacement After Successful Login.",
+      "descriptionAr": "📱 أرقام واتساب متوفرة\n🔐 ضمان تسجيل الدخول فقط متوفر\n⚡ احصل على أرقام واتساب مفعلة مع تسليم سريع\n✅ خدمة موثوقة مع دعم تسجيل الدخول فقط\n🚀 تفعيل سهل وتجربة استخدام سلسة\n⚠️ ملاحظة: ضمان تسجيل الدخول فقط. لا يوجد استبدال بعد نجاح تسجيل الدخول.",
+      "prices": {
+        "month": 1,
+        "year": 8
+      },
+      "imageUrl": "/service-images/whatsapp-number.jpg",
+      "offerType": "none",
+      "offerExpiresAt": null,
+      "sortOrder": 41
+    }
+  ],
+  "settings": {
+    "complaintEmail": "global2stor2@gmail.com",
+    "whatsappNumbers": [
+      "923228791573",
+      "923014968769"
+    ],
+    "aboutEn": "At Global Store, we bring world-class entertainment right to your screen without breaking the bank. We offer instant access to top premium OTT subscriptions in Kuwait at reasonable, budget-friendly prices—making streaming simple, affordable, and seamless.",
+    "aboutAr": "في Global Store، نقدم لك ترفيهاً عالمياً على شاشتك دون إرهاق ميزانيتك. نوفر وصولاً فورياً إلى أفضل اشتراكات OTT المميزة في الكويت بأسعار معقولة وصديقة للميزانية—لتجعل البث بسيطاً وميسور التكلفة وسلساً.",
+    "ownersEn": "Owned & Managed by M Fareed Tariq & M Zuhaib Tariq",
+    "ownersAr": "مملوك ويدار بواسطة م. فريد طارق وم. زهيب طارق",
+    "socialLinks": {
+      "whatsapp": "https://whatsapp.com/channel/0029Vb8CHOHJf05iTMmChh1U",
+      "instagram": "https://www.instagram.com/globalstoreold?igsh=MW1yZjdvZTYwODg1NQ==",
+      "tiktok": "https://www.tiktok.com/@globalstoreshub?_r=1&_t=ZS-98c4ZtYmpmR",
+      "youtube": "https://youtube.com/@globalstore-k7m?si=N-FuMtagfU6Z5Spa",
+      "facebook": "https://www.facebook.com/share/1C137NoNxY/"
+    },
+    "catalogSeeded": true
+  }
+}

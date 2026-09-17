@@ -32,7 +32,9 @@ import { resetOffHostBackupStatus } from "./offHostBackup.js";
  * Production boot (app.js → index.js):
  * 1. initDatabase() resolves DATA_DIR, copies the best local snapshot/store.
  * 2. hydrate from local admin-state.json / admin-state.backup.json replicas.
- * 3. If still empty or factory-default, auto-restore from off-host GitHub/URL backup.
+ * 3. If still empty or factory-default, auto-restore from GitHub Contents (token)
+ *    or the public raw catalog-backup URL (no token). Empty live catalogs restore
+ *    even when the remote snapshot matches DEFAULT_SERVICES.
  * 4. NEVER insert DEFAULT_SERVICES in production. ALLOW_FACTORY_SEED=1 is local/demo only.
  * 5. persistAdminState() writes admin-state.json + admin-state.backup.json to every
  *    writable durable dir and queues an off-host GitHub update when a token is set.
