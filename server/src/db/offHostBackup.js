@@ -7,6 +7,10 @@ const DEFAULT_BACKUP_PATH = "catalog-backup/admin-state.backup.json";
 const DEFAULT_BRANCH = "main";
 const FETCH_MS = 15_000;
 
+export function defaultRawBackupUrl(owner = DEFAULT_OWNER, repo = DEFAULT_REPO, branch = DEFAULT_BRANCH, pathName = DEFAULT_PATH) {
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${pathName}`;
+}
+
 let testHook = null;
 let lastStatus = {
   configured: false,
@@ -67,10 +71,19 @@ export function getOffHostBackupConfig() {
   const pathName = process.env.CATALOG_BACKUP_PATH || DEFAULT_PATH;
   const backupPath = process.env.CATALOG_BACKUP_BACKUP_PATH || DEFAULT_BACKUP_PATH;
   const branch = process.env.CATALOG_BACKUP_BRANCH || DEFAULT_BRANCH;
+  const disabled = process.env.CATALOG_BACKUP_DISABLE === "1";
+  const defaultUrl = defaultRawBackupUrl(owner, repo, branch, pathName);
+  const defaultBackupUrl = defaultRawBackupUrl(owner, repo, branch, backupPath);
+  const readUrl = url || (disabled ? "" : defaultUrl);
+  const usingDefaultRaw = Boolean(!url && readUrl);
   const githubOk =
     Boolean(token) &&
-    process.env.CATALOG_BACKUP_DISABLE !== "1" &&
+    !disabled &&
     (!isTestProcess() || process.env.CATALOG_BACKUP_ALLOW_NETWORK === "1");
+  const rawReadEnabled =
+    Boolean(readUrl) &&
+    !disabled &&
+    (!isTestProcess() || Boolean(url) || process.env.CATALOG_BACKUP_ALLOW_NETWORK === "1");
   return {
     token: token || "",
     owner,
@@ -78,10 +91,14 @@ export function getOffHostBackupConfig() {
     path: pathName,
     backupPath,
     branch,
-    url: url || "",
-    configured: Boolean(testHook || githubOk || url),
+    url: readUrl,
+    defaultUrl,
+    defaultBackupUrl,
+    usingDefaultRaw,
+    configured: Boolean(testHook || githubOk || (!disabled && readUrl)),
     pushConfigured: Boolean(testHook?.save || githubOk),
     githubEnabled: githubOk,
+    rawReadEnabled,
   };
 }
 
@@ -207,12 +224,23 @@ export async function loadOffHostBackup() {
         return backup.parsed;
       }
     }
-    if (config.url) {
+    if (config.rawReadEnabled && config.url) {
       const parsed = await loadFromUrl(config.url);
-      lastStatus.source = "url";
-      lastStatus.savedAt = parsed?.savedAt || null;
-      lastStatus.lastError = null;
-      return parsed;
+      if (parsed?.services?.length) {
+        lastStatus.source = config.usingDefaultRaw ? "github-raw" : "url";
+        lastStatus.savedAt = parsed.savedAt || null;
+        lastStatus.lastError = null;
+        return parsed;
+      }
+      if (config.usingDefaultRaw && config.defaultBackupUrl) {
+        const backup = await loadFromUrl(config.defaultBackupUrl);
+        if (backup?.services?.length) {
+          lastStatus.source = "github-raw-backup";
+          lastStatus.savedAt = backup.savedAt || null;
+          lastStatus.lastError = null;
+          return backup;
+        }
+      }
     }
     lastStatus.source = null;
     lastStatus.lastError = config.configured ? "offhost-empty" : "not-configured";

@@ -346,7 +346,12 @@ export async function hydrateFromOffHostIfNeeded() {
   if (!remote?.services?.length) {
     return { restored: false, reason: remote ? "offhost-empty" : "offhost-unavailable" };
   }
-  if (!snapshotHasCustomCatalog(remote)) {
+  const liveEmpty = source.listServices().length === 0;
+  const remoteIsCustom = snapshotHasCustomCatalog(remote);
+  // Empty production must hydrate the committed GitHub catalog even when it
+  // matches DEFAULT_SERVICES. Skip factory snapshots only when live already
+  // has rows (avoid clobbering a running factory/demo catalog).
+  if (!liveEmpty && !remoteIsCustom) {
     return { restored: false, reason: "offhost-is-factory" };
   }
   withoutPersist(() => {
@@ -367,8 +372,8 @@ export async function hydrateFromOffHostIfNeeded() {
     reason: "offhost-restored",
     snapshotPath: lastHydrateResult.snapshotPath || null,
     savedAt: remote.savedAt || null,
-    customCatalog: true,
-    matchesDefaults: false,
+    customCatalog: remoteIsCustom,
+    matchesDefaults: catalogMatchesDefaults(remote.services),
     offHost: true,
   };
   console.log(
