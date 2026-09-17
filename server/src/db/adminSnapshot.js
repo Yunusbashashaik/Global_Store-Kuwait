@@ -4,14 +4,20 @@ import { DEFAULT_SERVICES } from "../config/defaultServices.js";
 import { DEFAULT_SETTINGS } from "../config/defaults.js";
 
 export const SNAPSHOT_NAME = "admin-state.json";
+export const SNAPSHOT_BACKUP_NAME = "admin-state.backup.json";
+export const SNAPSHOT_FILE_NAMES = [SNAPSHOT_NAME, SNAPSHOT_BACKUP_NAME];
 
 const STORE_COPY_NAMES = [
-  SNAPSHOT_NAME,
+  ...SNAPSHOT_FILE_NAMES,
   "globalstore.json",
   "globalstore.db",
   "globalstore.db-wal",
   "globalstore.db-shm",
 ];
+
+export function snapshotFilesInDir(dir) {
+  return SNAPSHOT_FILE_NAMES.map((name) => path.join(path.resolve(dir), name));
+}
 
 function settingsSignature(settings) {
   const value = settings || {};

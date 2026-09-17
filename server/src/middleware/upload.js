@@ -67,6 +67,27 @@ export const uploadComplaintScreenshot = multer({
   fileFilter: anyImage,
 }).single("screenshot");
 
+const jsonSnapshot = (_req, file, cb) => {
+  const mime = (file.mimetype || "").toLowerCase();
+  const name = (file.originalname || "").toLowerCase();
+  const ok =
+    mime === "application/json" ||
+    mime === "text/json" ||
+    mime === "application/octet-stream" ||
+    name.endsWith(".json");
+  if (!ok) {
+    cb(new Error("Backup must be an admin-state.json file"));
+    return;
+  }
+  cb(null, true);
+};
+
+export const uploadAdminSnapshot = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: jsonSnapshot,
+}).single("snapshot");
+
 export function handleUpload(uploader) {
   return (req, res, next) => {
     uploader(req, res, (err) => {

@@ -27,9 +27,10 @@ const FIXTURE_ID = "fixture-service";
 describe("services + admin API", () => {
   let app;
 
-  before(() => {
+  before(async () => {
+    process.env.ALLOW_FACTORY_SEED = "1";
     initDatabase(path.join(testDir, "test.db"));
-    seedDatabase();
+    await seedDatabase();
     insertService({
       id: FIXTURE_ID,
       nameEn: "Fixture Service",
@@ -49,6 +50,7 @@ describe("services + admin API", () => {
 
   after(() => {
     closeDatabase();
+    delete process.env.ALLOW_FACTORY_SEED;
     fs.rmSync(testDir, { recursive: true, force: true });
   });
 
@@ -362,5 +364,50 @@ describe("services + admin API", () => {
     assert.ok(publicList.body.services.some((s) => s.nameEn === "Active Special"));
     assert.ok(publicList.body.services.some((s) => s.nameEn === "Regular Add"));
     assert.ok(adminList.body.services.some((s) => s.nameEn === "Expired Eid"));
+  });
+
+  it("exports and imports admin-state.json for the owner backup flow", async () => {
+    const login = await request(app)
+      .post("/api/admin/login")
+      .send({ username: "admin", password: "Wz%861?01" });
+    const token = login.body.token;
+
+    const denied = await request(app).get("/api/admin/catalog-backup");
+    assert.equal(denied.status, 401);
+
+    const exported = await request(app)
+      .get("/api/admin/catalog-backup")
+      .set("Authorization", `Bearer ${token}`);
+    assert.equal(exported.status, 200);
+    assert.ok(Array.isArray(exported.body.services));
+    assert.ok(exported.body.services.length > 0);
+
+    const restored = await request(app)
+      .post("/api/admin/catalog-backup")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        version: 1,
+        savedAt: "2026-09-17T00:00:00.000Z",
+        services: [
+          {
+            id: "imported-live",
+            nameEn: "Imported Kuwait Catalog",
+            nameAr: "مستورد",
+            descriptionEn: "custom",
+            descriptionAr: "مخصص",
+            prices: { month: 5, year: 40 },
+            offerType: "eid",
+            offerExpiresAt: new Date(Date.now() + 60_000).toISOString(),
+          },
+        ],
+        settings: { catalogSeeded: true, complaintEmail: "restore@example.com" },
+      });
+    assert.equal(restored.status, 200);
+    assert.equal(restored.body.ok, true);
+
+    const listed = await request(app).get("/api/services");
+    assert.equal(listed.body.services.length, 1);
+    assert.equal(listed.body.services[0].nameEn, "Imported Kuwait Catalog");
+    assert.equal(listed.body.services[0].offerType, "eid");
   });
 });

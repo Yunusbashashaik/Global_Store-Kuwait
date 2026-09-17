@@ -10,7 +10,7 @@ import {
 } from "../models/Service.js";
 import { getAllSettings, updateSettings } from "../models/Settings.js";
 import { snapshotAdminChange } from "../services/godaddySync.js";
-import { persistLiveCatalog } from "../db/persist.js";
+import { persistLiveCatalog, applyImportedAdminState, currentAdminSnapshotPayload } from "../db/persist.js";
 import {
   commitServiceImage,
   removeServiceImage,
@@ -242,5 +242,41 @@ export function putAdminSettings(req, res) {
   } catch (err) {
     console.error("Settings update failed:", err);
     res.status(400).json({ error: err.message || "Update failed" });
+  }
+}
+
+export function exportAdminCatalog(_req, res) {
+  try {
+    const payload = currentAdminSnapshotPayload();
+    if (!payload) {
+      res.status(500).json({ error: "Catalog is not ready" });
+      return;
+    }
+    const body = `${JSON.stringify(payload, null, 2)}\n`;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.setHeader("Content-Disposition", 'attachment; filename="admin-state.json"');
+    res.send(body);
+  } catch (err) {
+    console.error("Catalog export failed:", err);
+    res.status(500).json({ error: err.message || "Export failed" });
+  }
+}
+
+export function importAdminCatalog(req, res) {
+  try {
+    let parsed = req.body;
+    if (req.file?.buffer) {
+      parsed = JSON.parse(req.file.buffer.toString("utf8"));
+    } else if (typeof req.body === "string") {
+      parsed = JSON.parse(req.body);
+    } else if (req.body?.snapshot && typeof req.body.snapshot === "object") {
+      parsed = req.body.snapshot;
+    }
+    const result = applyImportedAdminState(parsed);
+    persistLiveCatalog();
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error("Catalog import failed:", err);
+    res.status(400).json({ error: err.message || "Import failed" });
   }
 }

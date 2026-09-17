@@ -9,7 +9,9 @@ import {
   adminSaveService,
   adminSaveSettings,
   adminTranslate,
+  adminUploadCatalogBackup,
   adminValidateSession,
+  adminDownloadCatalogBackup,
   notifyServicesUpdated,
 } from "../lib/adminApi.js";
 import { compressJpeg } from "../lib/compressJpeg.js";
@@ -132,6 +134,7 @@ export default function AdminPanel({ open, onClose, t }) {
 
   const cacheRef = useRef({ services: null, settings: null });
   const toastTimer = useRef(null);
+  const importInputRef = useRef(null);
 
   const showToast = useCallback((text) => {
     setToast(text);
@@ -260,6 +263,46 @@ export default function AdminPanel({ open, onClose, t }) {
     setView("edit-menu");
     setError("");
     prefetch(token).catch((err) => setError(err.message));
+  };
+
+  const onExportCatalog = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const blob = await adminDownloadCatalogBackup(token);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "admin-state.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast(t.adminCatalogExported);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onImportCatalog = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setBusy(true);
+    setError("");
+    try {
+      await adminUploadCatalogBackup(token, file);
+      cacheRef.current = { services: null, settings: null };
+      const { list } = await prefetch(token);
+      notifyServicesUpdated(list);
+      showToast(t.adminCatalogImported);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const selectEditSection = async (sectionId) => {
@@ -637,6 +680,29 @@ export default function AdminPanel({ open, onClose, t }) {
                   <button type="button" className="btn btn-ghost admin-dash-card" onClick={openEditMenu}>
                     {t.adminEditServicesBtn}
                   </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost admin-dash-card"
+                    onClick={onExportCatalog}
+                    disabled={busy}
+                  >
+                    {t.adminExportCatalog}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost admin-dash-card"
+                    onClick={() => importInputRef.current?.click()}
+                    disabled={busy}
+                  >
+                    {t.adminImportCatalog}
+                  </button>
+                  <input
+                    ref={importInputRef}
+                    type="file"
+                    accept="application/json,.json"
+                    hidden
+                    onChange={onImportCatalog}
+                  />
                 </div>
                 {error ? <p className="error-text">{error}</p> : null}
               </div>

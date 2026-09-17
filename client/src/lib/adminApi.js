@@ -332,6 +332,35 @@ export async function adminDeleteService(token, id) {
   await requestJson(`/api/admin/services/${id}`, { method: "DELETE", token });
 }
 
+export async function adminDownloadCatalogBackup(token) {
+  let res;
+  try {
+    res = await fetch(apiUrl("/api/admin/catalog-backup"), {
+      method: "GET",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+  } catch (err) {
+    throw networkError(err);
+  }
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const err = new Error(data.error || `Request failed (${res.status})`);
+    err.status = res.status;
+    throw networkError(err);
+  }
+  return res.blob();
+}
+
+export async function adminUploadCatalogBackup(token, file) {
+  const formData = new FormData();
+  formData.append("snapshot", file);
+  return requestJson("/api/admin/catalog-backup", {
+    method: "POST",
+    token,
+    formData,
+  });
+}
+
 export function notifyServicesUpdated(services) {
   if (Array.isArray(services)) writeCachedServices(services);
   window.dispatchEvent(

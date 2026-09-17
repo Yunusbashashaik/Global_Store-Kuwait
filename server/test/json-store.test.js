@@ -11,17 +11,19 @@ import { getAllSettings, updateSettings } from "../src/models/Settings.js";
 const testDir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-json-"));
 
 describe("JSON file database fallback", () => {
-  before(() => {
+  before(async () => {
     process.env.GODADDY_SYNC_DIR = path.join(testDir, "godaddy-sync");
+    process.env.ALLOW_FACTORY_SEED = "1";
     initDatabase(path.join(testDir, "unused.db"), {
       engine: "json",
       jsonPath: path.join(testDir, "store.json"),
     });
-    seedDatabase();
+    await seedDatabase();
   });
 
   after(() => {
     closeDatabase();
+    delete process.env.ALLOW_FACTORY_SEED;
     fs.rmSync(testDir, { recursive: true, force: true });
   });
 

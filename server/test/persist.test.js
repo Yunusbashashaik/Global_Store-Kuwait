@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { after, describe, it } from "node:test";
+import { after, before, describe, it } from "node:test";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -27,20 +27,27 @@ import { catalogMatchesDefaults, writeAdminSnapshot } from "../src/db/persist.js
 
 describe("admin catalog persistence", () => {
   const dirs = [];
+  const prevFactory = process.env.ALLOW_FACTORY_SEED;
+
+  before(() => {
+    process.env.ALLOW_FACTORY_SEED = "1";
+  });
 
   after(() => {
     closeDatabase();
+    if (prevFactory === undefined) delete process.env.ALLOW_FACTORY_SEED;
+    else process.env.ALLOW_FACTORY_SEED = prevFactory;
     for (const dir of dirs) {
       fs.rmSync(dir, { recursive: true, force: true });
     }
   });
 
-  it("keeps settings after close, reopen, and seed", () => {
+  it("keeps settings after close, reopen, and seed", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-persist-"));
     dirs.push(dir);
     const jsonPath = path.join(dir, "globalstore.json");
     initDatabase(path.join(dir, "unused.db"), { engine: "json", jsonPath });
-    seedDatabase();
+    await seedDatabase();
 
     updateSettings({
       complaintEmail: "persist@example.com",
@@ -49,7 +56,7 @@ describe("admin catalog persistence", () => {
 
     closeDatabase();
     initDatabase(path.join(dir, "unused.db"), { engine: "json", jsonPath });
-    seedDatabase();
+    await seedDatabase();
 
     assert.equal(getDbEngine(), "json");
     assert.equal(listServices().length, DEFAULT_SERVICES.length);
@@ -59,7 +66,7 @@ describe("admin catalog persistence", () => {
     assert.equal(fs.existsSync(`${jsonPath}.bak`), false);
   });
 
-  it("does not copy or keep JSON catalog backup files", () => {
+  it("does not copy or keep JSON catalog backup files", async () => {
     const fromDir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-legacy-bak-"));
     const toDir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-dest-bak-"));
     dirs.push(fromDir, toDir);
@@ -71,7 +78,7 @@ describe("admin catalog persistence", () => {
     assert.ok(fs.existsSync(path.join(toDir, "globalstore.json")));
   });
 
-  it("copies leftover upload files into a data folder that already exists", () => {
+  it("copies leftover upload files into a data folder that already exists", async () => {
     const fromDir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-legacy-up-"));
     const toDir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-dest-up-"));
     dirs.push(fromDir, toDir);
@@ -85,7 +92,7 @@ describe("admin catalog persistence", () => {
     );
   });
 
-  it("writes new service images into the active data directory", () => {
+  it("writes new service images into the active data directory", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-upload-"));
     dirs.push(dir);
     initDatabase(path.join(dir, "unused.db"), {
@@ -97,7 +104,7 @@ describe("admin catalog persistence", () => {
     assert.ok(fs.existsSync(dest));
   });
 
-  it("seeds the default catalog only when the store is empty", () => {
+  it("seeds the default catalog only when the store is empty", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-empty-hard-"));
     dirs.push(dir);
     initDatabase(path.join(dir, "unused.db"), {
@@ -112,19 +119,19 @@ describe("admin catalog persistence", () => {
       descriptionAr: "ar",
       prices: { month: 1, year: 8 },
     });
-    const first = seedDatabase();
+    const first = await seedDatabase();
     assert.equal(first.catalogSeededThisBoot, false);
     assert.equal(listServices().length, 1);
     assert.equal(listServices()[0].id, "live-row");
     assert.equal(getSetting("catalogSeeded"), true);
   });
 
-  it("keeps renamed services after close, reopen, and seed", () => {
+  it("keeps renamed services after close, reopen, and seed", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-rename-"));
     dirs.push(dir);
     const jsonPath = path.join(dir, "globalstore.json");
     initDatabase(path.join(dir, "unused.db"), { engine: "json", jsonPath });
-    const seeded = seedDatabase();
+    const seeded = await seedDatabase();
     assert.equal(seeded.catalogSeededThisBoot, true);
 
     const original = listServices().find((s) => s.id === "youtube-premium-personal");
@@ -133,7 +140,7 @@ describe("admin catalog persistence", () => {
 
     closeDatabase();
     initDatabase(path.join(dir, "unused.db"), { engine: "json", jsonPath });
-    const again = seedDatabase();
+    const again = await seedDatabase();
     assert.equal(again.catalogSeededThisBoot, false);
     assert.equal(getLastSeedResult().catalogSeededThisBoot, false);
 
@@ -142,14 +149,14 @@ describe("admin catalog persistence", () => {
     assert.ok(listServices().some((s) => s.id === "netflix-prime-combo"));
   });
 
-  it("does not delete admin-added services on later seeds", () => {
+  it("does not delete admin-added services on later seeds", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-extra-"));
     dirs.push(dir);
     initDatabase(path.join(dir, "unused.db"), {
       engine: "json",
       jsonPath: path.join(dir, "globalstore.json"),
     });
-    seedDatabase();
+    await seedDatabase();
     insertService({
       id: "extra-admin",
       nameEn: "Extra",
@@ -158,42 +165,46 @@ describe("admin catalog persistence", () => {
       descriptionAr: "ar",
       prices: { month: 2, year: 9 },
     });
-    seedDatabase();
+    await seedDatabase();
     const listed = listServices();
     assert.ok(listed.some((s) => s.id === "extra-admin"));
     assert.ok(listed.length > DEFAULT_SERVICES.length);
   });
 
-  it("reports durable health fields after seed-once", () => {
+  it("reports durable health fields after seed-once", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-health-"));
     dirs.push(dir);
     initDatabase(path.join(dir, "unused.db"), {
       engine: "json",
       jsonPath: path.join(dir, "globalstore.json"),
     });
-    seedDatabase();
+    await seedDatabase();
     const health = getHealthPayload();
     assert.equal(health.ok, true);
     assert.equal(health.catalogSeeded, true);
     assert.equal(health.catalogSeededThisBoot, true);
+    assert.equal(health.factorySeedDisabled, false);
+    assert.equal(typeof health.offHostBackupConfigured, "boolean");
+    assert.equal(health.catalogEmpty, false);
+    assert.ok(Array.isArray(health.replicaInventory));
     assert.equal(health.dataDir, getDataDir());
     assert.ok(health.storePath);
     assert.ok(health.snapshotSavedAt);
     assert.equal(typeof health.dataDirInsideApp, "boolean");
     assert.equal(isInsideAppTree(dir, dir), true);
 
-    seedDatabase();
+    await seedDatabase();
     assert.equal(getHealthPayload().catalogSeededThisBoot, false);
   });
 
-  it("hides expired offers from the public catalog only", () => {
+  it("hides expired offers from the public catalog only", async () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gs-offer-"));
     dirs.push(dir);
     initDatabase(path.join(dir, "unused.db"), {
       engine: "json",
       jsonPath: path.join(dir, "globalstore.json"),
     });
-    seedDatabase();
+    await seedDatabase();
     insertService({
       id: "eid-offer-row",
       nameEn: "Eid Deal",
@@ -223,7 +234,7 @@ describe("admin catalog persistence", () => {
     assert.ok(publicList.some((s) => s.id === "netflix-prime-combo"));
   });
 
-  it("restores a custom snapshot from an alternate durable path without factory seeding", () => {
+  it("restores a custom snapshot from an alternate durable path without factory seeding", async () => {
     const active = fs.mkdtempSync(path.join(os.tmpdir(), "gs-active-"));
     const replica = fs.mkdtempSync(path.join(os.tmpdir(), "gs-replica-"));
     dirs.push(active, replica);
@@ -255,7 +266,7 @@ describe("admin catalog persistence", () => {
       jsonPath: path.join(active, "globalstore.json"),
       replicaDirs: [replica],
     });
-    const seeded = seedDatabase();
+    const seeded = await seedDatabase();
     assert.equal(seeded.catalogSeededThisBoot, false);
     assert.equal(getLastSeedResult().catalogSeededThisBoot, false);
     assert.equal(seeded.hydrated.restored, true);
@@ -273,7 +284,7 @@ describe("admin catalog persistence", () => {
     assert.equal(getLastCatalogRecovery().from, replica);
   });
 
-  it("does not clobber a custom snapshot with a factory-seeded catalog", () => {
+  it("does not clobber a custom snapshot with a factory-seeded catalog", async () => {
     const active = fs.mkdtempSync(path.join(os.tmpdir(), "gs-clobber-a-"));
     const replica = fs.mkdtempSync(path.join(os.tmpdir(), "gs-clobber-b-"));
     dirs.push(active, replica);
@@ -317,7 +328,7 @@ describe("admin catalog persistence", () => {
     assert.equal(catalogMatchesDefaults(kept.services), false);
   });
 
-  it("writes admin-state.json to multiple durable directories", () => {
+  it("writes admin-state.json to multiple durable directories", async () => {
     const one = fs.mkdtempSync(path.join(os.tmpdir(), "gs-multi-a-"));
     const two = fs.mkdtempSync(path.join(os.tmpdir(), "gs-multi-b-"));
     dirs.push(one, two);
@@ -326,9 +337,11 @@ describe("admin catalog persistence", () => {
       jsonPath: path.join(one, "globalstore.json"),
       replicaDirs: [two],
     });
-    seedDatabase();
+    await seedDatabase();
     assert.ok(fs.existsSync(path.join(one, "admin-state.json")));
+    assert.ok(fs.existsSync(path.join(one, "admin-state.backup.json")));
     assert.ok(fs.existsSync(path.join(two, "admin-state.json")));
+    assert.ok(fs.existsSync(path.join(two, "admin-state.backup.json")));
     assert.ok(fs.existsSync(path.join(two, "globalstore.json")));
     const fromOne = JSON.parse(fs.readFileSync(path.join(one, "admin-state.json"), "utf8"));
     const fromTwo = JSON.parse(fs.readFileSync(path.join(two, "admin-state.json"), "utf8"));

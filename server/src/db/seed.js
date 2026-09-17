@@ -1,7 +1,9 @@
 import { DEFAULT_SERVICES } from "../config/defaultServices.js";
+import { isFactorySeedAllowed, isFactorySeedDisabled } from "./factorySeed.js";
 import {
   bindPersist,
   findPriorCatalogEvidence,
+  hydrateFromOffHostIfNeeded,
   hydratePersistedAdminState,
   persistAdminState,
   withoutPersist,
@@ -24,20 +26,16 @@ import {
   persistServiceImageFiles,
   restoreServiceImageFiles,
 } from "../services/serviceImages.js";
+import { resetOffHostBackupStatus } from "./offHostBackup.js";
 
 /**
  * Production boot (app.js → index.js):
- * 1. initDatabase() resolves DATA_DIR (env / /local / /root / $HOME), copies the
- *    best snapshot/store into the active dir, then opens SQLite/JSON.
- * 2. seed.js bindPersist runs at import time.
- * 3. seedDatabase(): hydrate from the best snapshot (offers included), then
- *    factory-insert DEFAULT_SERVICES only on true first boot.
- * 4. persistAdminState() replicates to every writable durable dir and will not
- *    overwrite a non-default admin-state.json with factory/empty rows.
- *
- * Wiped /local + surviving /root or $HOME custom snapshot:
- * recover copies it → hydrate restores names/prices/offers → seed is skipped
- * (catalogSeededThisBoot=false) → persist refreshes replicas from the restored catalog.
+ * 1. initDatabase() resolves DATA_DIR, copies the best local snapshot/store.
+ * 2. hydrate from local admin-state.json / admin-state.backup.json replicas.
+ * 3. If still empty or factory-default, auto-restore from off-host GitHub/URL backup.
+ * 4. NEVER insert DEFAULT_SERVICES in production. ALLOW_FACTORY_SEED=1 is local/demo only.
+ * 5. persistAdminState() writes admin-state.json + admin-state.backup.json to every
+ *    writable durable dir and queues an off-host GitHub update when a token is set.
  */
 function persistImages() {
   try {
@@ -52,6 +50,7 @@ bindPersist({
   listServices,
   getAllSettings,
   getSetting,
+  setSetting,
   countSettings,
   countServices,
   replaceAllServices,
@@ -64,8 +63,10 @@ let lastSeedResult = {
   settingsSeeded: false,
   catalogSeededThisBoot: false,
   seedBlockedReason: null,
+  factorySeedDisabled: true,
   hydrated: { restored: false },
   priorCatalog: { detected: false },
+  offHost: { restored: false },
 };
 
 export function getLastSeedResult() {
@@ -76,6 +77,13 @@ function seedDefaultCatalogIfEmpty() {
   if (countServices() > 0) {
     setSetting("catalogSeeded", true);
     return { seeded: false, reason: "live-catalog-present" };
+  }
+
+  if (!isFactorySeedAllowed()) {
+    console.error(
+      "Factory catalog insert is disabled (production or ALLOW_FACTORY_SEED is not 1). Leaving services empty after restore attempts.",
+    );
+    return { seeded: false, reason: "factory-seed-disabled" };
   }
 
   if (getSetting("catalogSeeded") === true) {
@@ -112,9 +120,11 @@ function seedDefaultCatalogIfEmpty() {
   return { seeded: true, reason: "true-first-boot", prior };
 }
 
-export function seedDatabase() {
+export async function seedDatabase() {
+  resetOffHostBackupStatus();
   const settingsSeeded = withoutPersist(() => seedSettingsIfEmpty());
   const hydrated = hydratePersistedAdminState();
+  const offHost = await hydrateFromOffHostIfNeeded();
   const seed = seedDefaultCatalogIfEmpty();
   const liveCount = countServices();
   if (liveCount > 0) {
@@ -126,8 +136,10 @@ export function seedDatabase() {
     settingsSeeded,
     catalogSeededThisBoot: seed.seeded,
     seedBlockedReason: seed.seeded ? null : seed.reason,
+    factorySeedDisabled: isFactorySeedDisabled(),
     hydrated,
     priorCatalog: seed.prior || findPriorCatalogEvidence(),
+    offHost,
   };
   return lastSeedResult;
 }
