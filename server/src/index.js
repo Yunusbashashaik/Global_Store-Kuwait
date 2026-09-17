@@ -16,7 +16,10 @@ const PORT = Number(process.env.PORT) || 3001;
 const HOST = process.env.HOST || "0.0.0.0";
 
 initDatabase();
-seedDatabase();
+const catalogReady = seedDatabase().catch((err) => {
+  console.error("Catalog boot failed:", err?.message || err);
+  throw err;
+});
 console.log(
   `[globalstore] catalog data dir=${getDataDir()} store=${getHealthPayload().storePath} engine=${getHealthPayload().db}`,
 );
@@ -60,17 +63,23 @@ export function startServer() {
     process.env.PASSENGER_APP_ENV || process.env.PASSENGER_SPAWN_WORK_DIR,
   );
 
-  if (passengerGlobal) {
-    globalThis.PhusionPassenger.configure({ autoInstall: false });
-    app.listen("passenger");
-    console.log("GlobalStore API listening via Phusion Passenger");
-    return;
-  }
+  const listen = () => {
+    if (passengerGlobal) {
+      globalThis.PhusionPassenger.configure({ autoInstall: false });
+      app.listen("passenger");
+      console.log("GlobalStore API listening via Phusion Passenger");
+      return;
+    }
 
-  app.listen(PORT, HOST, () => {
-    console.log(
-      `GlobalStore API listening on http://${HOST}:${PORT}${passengerEnv ? " (Passenger env)" : ""}`,
-    );
+    app.listen(PORT, HOST, () => {
+      console.log(
+        `GlobalStore API listening on http://${HOST}:${PORT}${passengerEnv ? " (Passenger env)" : ""}`,
+      );
+    });
+  };
+
+  catalogReady.then(listen).catch((err) => {
+    console.error("Refusing to listen until catalog boot finishes:", err?.message || err);
   });
 }
 

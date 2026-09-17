@@ -11,6 +11,7 @@ import {
   probeSnapshotPaths,
   readSnapshotFile,
   scoreSnapshotProbe,
+  snapshotFilesInDir,
 } from "./adminSnapshot.js";
 import { JsonDatabase } from "./jsonDb.js";
 
@@ -260,7 +261,7 @@ export function recoverBestCatalogInto(destDir, searchDirs = []) {
   fs.mkdirSync(dest, { recursive: true });
   const dirs = [...new Set((searchDirs || []).map((dir) => path.resolve(dir)))];
   if (!dirs.includes(dest)) dirs.unshift(dest);
-  const probes = probeSnapshotPaths(dirs.map((dir) => path.join(dir, SNAPSHOT_NAME)));
+  const probes = probeSnapshotPaths(dirs.flatMap((dir) => snapshotFilesInDir(dir)));
   const best = pickBestSnapshotProbe(probes);
   if (!best) {
     lastCatalogRecovery = {
@@ -347,7 +348,7 @@ export function resolveProductionDataDir(options = {}) {
   const candidates = durableDataDirCandidates();
   const searchDirs = [...new Set([envDir, ...candidates, LEGACY_DATA_DIR].filter(Boolean))];
   const best = pickBestSnapshotProbe(
-    probeSnapshotPaths(searchDirs.map((dir) => path.join(dir, SNAPSHOT_NAME))),
+    probeSnapshotPaths(searchDirs.flatMap((dir) => snapshotFilesInDir(dir))),
   );
   const bestDir = best ? path.dirname(best.path) : null;
 
@@ -376,6 +377,7 @@ export function migrateLegacyDataDir(fromDir, toDir) {
     "globalstore.db-shm",
     "globalstore.json",
     "admin-state.json",
+    "admin-state.backup.json",
   ]) {
     const src = path.join(fromDir, name);
     const dest = path.join(toDir, name);
@@ -386,6 +388,10 @@ export function migrateLegacyDataDir(fromDir, toDir) {
   }
   copyDirIfMissing(path.join(fromDir, "uploads"), path.join(toDir, "uploads"));
   copyIfMissing(path.join(fromDir, "admin-state.json"), path.join(toDir, "admin-state.json"));
+  copyIfMissing(
+    path.join(fromDir, "admin-state.backup.json"),
+    path.join(toDir, "admin-state.backup.json"),
+  );
   removeJsonBackupFiles(fromDir);
   removeJsonBackupFiles(toDir);
   if (copied) {
